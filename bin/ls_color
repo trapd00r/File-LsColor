@@ -1,10 +1,14 @@
 #!/usr/bin/perl
 use strict;
-use File::LsColor qw(ls_color);
+use lib '../lib';
+use File::LsColor qw(ls_color ls_color_internal);
 
 my $dir = shift // $ENV{HOME};
 
+print "\t Environment LS_COLORS used:\n\n";
 print "$_\n" for ls_color( glob("$dir/*") );
+print "\n\t Internal LS_COLORS used:\n\n";
+print "$_\n" for ls_color_internal( glob("$dir/*") );
 
 
 
