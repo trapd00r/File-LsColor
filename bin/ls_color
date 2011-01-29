@@ -1,0 +1,46 @@
+#!/usr/bin/perl
+use strict;
+use File::LsColor qw(ls_color);
+
+my $dir = shift // $ENV{HOME};
+
+print "$_\n" for ls_color( glob("$dir/*") );
+
+
+
+__END__
+
+=pod
+
+=head1 NAME
+
+ls_color - colorize input filenames just like ls does
+
+=head1 USAGE
+
+  ls_color [DIR]
+
+=head1 DESCRIPTION
+
+B<ls_color> demonstrates the Perl module L<File::Lscolor>.
+
+=head1 AUTHOR
+
+  Magnus Woldrich
+  CPAN ID: WOLDRICH
+  magnus@trapd00r.se
+  http://japh.se
+
+=head1 REPORTING BUGS
+
+Report bugs on rt.cpan.org or to magnus@trapd00r.se
+
+=head1 COPYRIGHT
+
+Copyright (C) 2011 Magnus Woldrich. All right reserved.
+This program is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself.
+
+=cut
+
+# vim: set ts=2 et sw=2:
