@@ -188,6 +188,7 @@ sub ls_color {
     }
   }
   return @files;
+}
 
 
 sub _parse_ls_colors {
