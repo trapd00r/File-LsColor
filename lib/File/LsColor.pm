@@ -5,7 +5,7 @@ BEGIN {
   use Exporter;
   use vars qw($VERSION @ISA @EXPORT_OK);
 
-  $VERSION = '0.115';
+  $VERSION = '0.116';
   @ISA = qw(Exporter);
 
   @EXPORT_OK = qw(
@@ -175,7 +175,7 @@ File::LsColor - Colorize input filenames just like ls does
 
 =head1 SYNOPSIS
 
-    use File::LsColor qw(ls_color ls_color_custom);
+    use File::LsColor qw(ls_color ls_color_custom ls_color_internal);
 
     for my $file(glob("$ENV{HOME}/*")) {
       print ls_color($file);
