@@ -1,14 +1,13 @@
 #!/usr/bin/perl
 use strict;
-use lib '../lib';
-use File::LsColor qw(ls_color ls_color_internal);
+use File::LsColor qw(ls_color);
 
-my $dir = shift // $ENV{HOME};
 
-print "\t Environment LS_COLORS used:\n\n";
-print "$_\n" for ls_color( glob("$dir/*") );
-print "\n\t Internal LS_COLORS used:\n\n";
-print "$_\n" for ls_color_internal( glob("$dir/*") );
+if(!@ARGV) {
+  while(<>) {
+    print ls_color($_);
+  }
+}
 
 
 
@@ -22,11 +21,15 @@ ls_color - colorize input filenames just like ls does
 
 =head1 USAGE
 
-  ls_color [DIR]
+  command | ls_color
 
 =head1 DESCRIPTION
 
 B<ls_color> demonstrates the Perl module L<File::Lscolor>.
+
+=head1 EXAMPLES
+
+  find $HOME/devel | ls_color
 
 =head1 AUTHOR
 
