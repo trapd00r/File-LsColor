@@ -5,7 +5,7 @@ BEGIN {
   use Exporter;
   use vars qw($VERSION @ISA @EXPORT_OK);
 
-  $VERSION = '0.116';
+  $VERSION = '0.124';
   @ISA = qw(Exporter);
 
   @EXPORT_OK = qw(
@@ -17,6 +17,14 @@ BEGIN {
 
 use Carp qw(croak);
 use Term::ExtendedColor qw(fg);
+#use Data::Dumper;
+#$Data::Dumper::Terse     = 1;
+#$Data::Dumper::Indent    = 1;
+#$Data::Dumper::Useqq     = 1;
+#$Data::Dumper::Deparse   = 1;
+#$Data::Dumper::Quotekeys = 0;
+#$Data::Dumper::Sortkeys  = 1;
+
 
 my $LS_COLORS = $ENV{LS_COLORS}; # Default
 
@@ -77,7 +85,7 @@ ln=target:pi=38;5;126:ow=33;1;38;5;208:di=38;5;30:*.pm=33;1;38;5;197:
 *.sty=38;5;58:*.cfg=1:*.properties=38;5;197;1:*.m4=38;5;196;3:*.tfnt=38;5;140:
 *.tcl=38;5;64;1:*.typelib=38;5;49:*.pfa=38;5;43:*.sed=38;5;130;1:
 *.awk=38;5;148;1:*.svg=38;5;24;1:*.ttf=38;5;69;1:*.sample=38;5;225;1:
-*.example=38;5;225;1
+*.example=38;5;225;1:*.un~=38;5;240;3:*.out=38;5;46;1
 
 ';
 
@@ -107,7 +115,6 @@ sub ls_color_custom {
   ls_color(@_);
 }
 
-# Return only those files that have been colored... 
 
 sub ls_color {
   my @files;
@@ -121,7 +128,9 @@ sub ls_color {
   my %result;
   my $ls_colors = _parse_ls_colors();
 
+
   for my $file(@files) {
+    chomp $file;
     my($ext) = $file =~ m/^.*\.(.+)$/m;
     for my $ft(keys(%{$ls_colors})) {
       if($ft eq $ext) {
@@ -139,10 +148,47 @@ sub ls_color {
           $file = fg($n, $file);
         }
       }
+      else {
+        for my $o(qw(di fi pi so ln)) {
+          if($ft eq $o) {
+            # No dir
+            if( ($ft eq 'di') and (!-d $file) ) {
+              next;
+            }
+
+            # No socket
+            elsif( ($ft eq 'so') and (!-S $file) ) {
+              next;
+            }
+
+            # No symlink
+            elsif( ($ft eq 'ln') and (!-l $file) ) {
+              next;
+            }
+
+            # No fifo
+            elsif( ($ft eq 'pi') and (!-p $file) ) {
+              next;
+            }
+
+            if($ls_colors->{$ft} =~ m/;(\d+;?[1-9]?)$/m) {
+              my $n = $1;
+              if($n =~ m/(\d+);([1-7])/) {
+                my $attr = $2;
+                $n = $1;
+                Term::ExtendedColor::autoreset(0);
+                $file = fg($attributes{$2}, $file);
+              }
+              Term::ExtendedColor::autoreset(1);
+              $file = fg($n, $file);
+            }
+          }
+        }
+      }
     }
   }
   return @files;
-}
+
 
 sub _parse_ls_colors {
   my $ft;
@@ -153,6 +199,10 @@ sub _parse_ls_colors {
 
   for(split(/:/, $LS_COLORS)) {
     if($_ =~ m/\*\.([\w.]+)=([0-9;]+)/) {
+      $ft->{$1} = $2;
+    }
+    # di, fi, tw, or, ex, pi etcetera
+    elsif($_ =~ m/(\w+)=([0-9;]+)/) {
       $ft->{$1} = $2;
     }
   }

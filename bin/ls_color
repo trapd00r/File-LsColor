@@ -1,11 +1,12 @@
 #!/usr/bin/perl
 use strict;
+use lib '../lib';
 use File::LsColor qw(ls_color);
 
 
 if(!@ARGV) {
   while(<>) {
-    print ls_color($_);
+    print ls_color($_), "\n";
   }
 }
 
