@@ -5,11 +5,12 @@ BEGIN {
   use Exporter;
   use vars qw($VERSION @ISA @EXPORT_OK);
 
-  $VERSION = '0.013';
+  $VERSION = '0.115';
   @ISA = qw(Exporter);
 
   @EXPORT_OK = qw(
     ls_color
+    ls_color_custom
     ls_color_internal
   );
 }
@@ -101,6 +102,12 @@ sub ls_color_internal {
   ls_color(@_);
 }
 
+sub ls_color_custom {
+  $LS_COLORS = shift;
+  ls_color(@_);
+}
+
+# Return only those files that have been colored... 
 
 sub ls_color {
   my @files;
@@ -125,8 +132,10 @@ sub ls_color {
           if($n =~ m/(\d+);([1-7])/) {
             my $attr = $2;
             $n = $1;
+            Term::ExtendedColor::autoreset(0);
             $file = fg($attributes{$2}, $file);
           }
+          Term::ExtendedColor::autoreset(1);
           $file = fg($n, $file);
         }
       }
@@ -139,7 +148,7 @@ sub _parse_ls_colors {
   my $ft;
 
   if( (!defined($LS_COLORS)) or ($LS_COLORS eq '') ) {
-    croak("LS_COLORS variable not set! Nothing to be done...\n");
+    croak("LS_COLORS variable not set! Nothing to do...\n");
   }
 
   for(split(/:/, $LS_COLORS)) {
@@ -166,11 +175,19 @@ File::LsColor - Colorize input filenames just like ls does
 
 =head1 SYNOPSIS
 
-    use File::LsColor qw(ls_color ls_color_internal);
+    use File::LsColor qw(ls_color ls_color_custom);
 
     for my $file(glob("$ENV{HOME}/*")) {
       print ls_color($file);
     }
+
+    # or specify own pattern
+
+    my @c = ls_color_custom('*.pl=38;5;196;1:*.pm=38;5;220', @files);
+
+    # or use the internal mappings
+
+    my @c
 
 =head1 DESCRIPTION
 
@@ -206,6 +223,13 @@ In this case, C<ls_color_internal()> can be used.
 The same as C<ls_color()>, with one minor difference; Instead of using the
 LS_COLORS variable from the environment, an internal specification is used.
 This specification contains about 250 extensions as of this writing.
+
+=head2 ls_color_custom()
+
+The first argument to C<ls_color_custom()> should be a valid LS_COLORS
+definition, like so:
+
+  ls_color_custom("*.pl=38;5;196", @perl_files);
 
 =head1 AUTHOR
 
