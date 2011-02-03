@@ -133,7 +133,7 @@ sub ls_color {
     for my $ft(keys(%{$ls_colors})) {
       if($ft eq $ext) {
       # 38;5;100;1m
-          if($ls_colors->{$ft} =~ m/;(\d+;?[1-9]?)$/m) {
+        if($ls_colors->{$ft} =~ m/;(\d+;?[1-9]?)$/m) {
           my $n = $1;
           # Account for bold, italic, underline etc
           if($n =~ m/(\d+);([1-7])/) {
