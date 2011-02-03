@@ -5,7 +5,7 @@ BEGIN {
   use Exporter;
   use vars qw($VERSION @ISA @EXPORT_OK);
 
-  $VERSION = '0.124';
+  $VERSION = '0.125';
   @ISA = qw(Exporter);
 
   @EXPORT_OK = qw(
@@ -38,15 +38,15 @@ my $internal_ls_color = '
 *.pid=38;5;160:*.pod=38;5;106:*.vim=1:*.git=38;5;197:*.urlview=38;5;85:
 *.dump=38;5;119:*.conf=1:*.md=38;5;184:*.markdown=38;5;184:*.mkd=38;5;184:
 *.h=38;5;81:*.rb=38;5;192:*.c=38;5;110:*.diff=42;38:*.yml=38;5;208:
-*.PL=38;5;160:*.csv=38;5;78:tw=33;1;38;5;208:*.chm=38;5;144:*.bin=38;5;249:
+*.PL=38;5;160:*.csv=38;5;78:tw=38;5;208;1:*.chm=38;5;144:*.bin=38;5;249:
 *.sms=38;5;33:*.pdf=38;5;203:*.cbz=38;5;140:*.cbr=38;5;140:*.nes=38;5;160:
 *.mpg=38;5;38:*.ts=38;5;39:*.sfv=38;5;197:*.m3u=38;5;172:*.txt=38;5;192:
 *.log=38;5;190:*.bash=38;5;173:*.swp=38;5;241:*.swo=38;5;236:*.theme=38;5;109:
-*.zsh=38;5;173:*.nfo=38;5;220:mi=38;5;124:or=38;5;160:ex=33;1;38;5;148:
-ln=target:pi=38;5;126:ow=33;1;38;5;208:di=38;5;30:*.pm=33;1;38;5;197:
+*.zsh=38;5;173:*.nfo=38;5;220:mi=38;5;124:or=38;5;160:ex=38;5;148;1:
+ln=target:pi=38;5;126:ow=38;5;208;1:di=38;5;30:*.pm=38;5;197;1:
 *.pl=38;5;214:*.sh=38;5;113:*.patch=45;37:*.tar=38;5;118:*.tar.gz=38;5;34:
 *.zip=38;5;11:*.rar=38;5;106:*.tgz=38;5;11:*.7z=38;5;11:*.mp3=38;5;191:
-*.flac=33;1;38;5;166:*.mkv=38;5;202:*.avi=38;5;114:*.wmv=38;5;113:
+*.flac=38;5;166;1:*.mkv=38;5;202:*.avi=38;5;114:*.wmv=38;5;113:
 *.jpg=38;5;66:*.JPG=38;5;66:*.jpeg=38;5;67:*.png=38;5;68:*.pacnew=38;5;33:
 *.xz=38;5;118:*.iso=38;5;124:*.css=38;5;91:*.php=38;5;93:*.gitignore=38;5;240:
 *.tmp=38;5;244:*.py=38;5;41:*.rmvb=38;5;112:*.arj=38;5;11:*.a=38;5;59:
@@ -86,9 +86,7 @@ ln=target:pi=38;5;126:ow=33;1;38;5;208:di=38;5;30:*.pm=33;1;38;5;197:
 *.tcl=38;5;64;1:*.typelib=38;5;49:*.pfa=38;5;43:*.sed=38;5;130;1:
 *.awk=38;5;148;1:*.svg=38;5;24;1:*.ttf=38;5;69;1:*.sample=38;5;225;1:
 *.example=38;5;225;1:*.un~=38;5;240;3:*.out=38;5;46;1
-
 ';
-
 
 $internal_ls_color =~ s/\n//g;
 
@@ -135,7 +133,7 @@ sub ls_color {
     for my $ft(keys(%{$ls_colors})) {
       if($ft eq $ext) {
       # 38;5;100;1m
-        if($ls_colors->{$ft} =~ m/;(\d+;?[1-9]?)$/m) {
+          if($ls_colors->{$ft} =~ m/;(\d+;?[1-9]?)$/m) {
           my $n = $1;
           # Account for bold, italic, underline etc
           if($n =~ m/(\d+);([1-7])/) {
@@ -187,7 +185,7 @@ sub ls_color {
       }
     }
   }
-  return @files;
+  return wantarray() ? @files : join('', @files);
 }
 
 
@@ -252,7 +250,6 @@ If said files have an extension and that extension is present in the users
 LS_COLORS variable, they will be colored just like they would have been if the
 filenames were output from L<ls(1)> or L<tree(1)>.
 
-
 =head1 EXPORTS
 
 None by default.
@@ -263,11 +260,13 @@ None by default.
 
 Arguments: @files | \@files
 
-Returns:   @files
+Returns:   $files | @files
 
-Returns a list of filenames colored as specified by the environment LS_COLORS
-variable. If the LS_COLORS variable is not set, throws an exception.
+Returns a list of filenames colored as specified by the environment C<LS_COLORS>
+variable. If the C<LS_COLORS> variable is not set, throws an exception.
 In this case, C<ls_color_internal()> can be used.
+
+In scalar context a string joined by '' is returned.
 
 =head2 ls_color_internal()
 
@@ -280,7 +279,7 @@ This specification contains about 250 extensions as of this writing.
 The first argument to C<ls_color_custom()> should be a valid LS_COLORS
 definition, like so:
 
-  ls_color_custom("*.pl=38;5;196", @perl_files);
+  ls_color_custom("*.pl=38;5;196:*.pm=38;5;197;1", @perl_files);
 
 =head1 AUTHOR
 
@@ -299,7 +298,7 @@ None required yet.
 
 =head1 COPYRIGHT
 
-Copyright 2011 B<THIS MODULE>s L</AUTHOR> and L</CONTRIBUTORS> as listed above.
+Copyright 2011 B<File::LsColor>s L</AUTHOR> and L</CONTRIBUTORS> as listed above.
 
 =head1 LICENSE
 
