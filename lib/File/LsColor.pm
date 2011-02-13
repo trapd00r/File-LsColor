@@ -3,15 +3,20 @@ use strict;
 
 BEGIN {
   use Exporter;
-  use vars qw($VERSION @ISA @EXPORT_OK);
+  use vars qw($VERSION @ISA @EXPORT_OK %EXPORT_TAGS);
 
-  $VERSION = '0.130';
+  $VERSION = '0.142';
   @ISA = qw(Exporter);
 
   @EXPORT_OK = qw(
     ls_color
     ls_color_custom
+    ls_color_default
     ls_color_internal
+  );
+
+  %EXPORT_TAGS = (
+    all => [ qw(ls_color ls_color_custom ls_color_default ls_color_internal) ],
   );
 }
 
@@ -107,6 +112,30 @@ sub ls_color_custom {
   ls_color(@_);
 }
 
+# Those are the default LS_COLORS mappings from GNU ls
+sub ls_color_default {
+  $LS_COLORS = '*.tar=01;31:*.tgz=01;31:*.arj=01;31:*.taz=01;31:*.lzh=01;31:
+  *.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.zip=01;31:*.z=01;31:*.Z=01;31:
+  *.dz=01;31:*.gz=01;31:*.lz=01;31:*.xz=01;31:*.bz2=01;31:*.bz=01;31:
+  *.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:
+  *.rar=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:
+  *.jpg=01;35:*.jpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:
+  *.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:
+  *.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:
+  *.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.ogm=01;35:*.mp4=01;35:
+  *.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:
+  *.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:
+  *.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:
+  *.cgm=01;35:*.emf=01;35:*.axv=01;35:*.anx=01;35:*.ogv=01;35:*.ogx=01;35:
+  *.aac=00;36:*.au=00;36:*.flac=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:
+  *.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.axa=00;36:
+  *.oga=00;36:*.spx=00;36:*.xspf=00;36';
+
+  $LS_COLOR =~ s/\n//g;
+
+  ls_color(@_);
+}
+
 
 sub ls_color {
   my @files;
@@ -129,6 +158,7 @@ sub ls_color {
       # 38;5;100;1m
         if($ls_colors->{$ft} =~ m/;(\d+;?[1-9]?)$/m) {
           my $n = $1;
+          print "N IS $n\n";
           # Account for bold, italic, underline etc
           if($n =~ m/(\d+);([1-7])/) {
             my $attr = $2;
@@ -218,7 +248,14 @@ File::LsColor - Colorize input filenames just like ls does
 
 =head1 SYNOPSIS
 
-    use File::LsColor qw(ls_color ls_color_custom ls_color_internal);
+    use File::LsColor qw(:all);
+    # Is equal to:
+    use File::LsColor qw(
+      ls_color
+      ls_color_custom
+      ls_color_default
+      ls_color_internal
+    );
 
     my @files = glob("$ENV{HOME}/*");
 
@@ -231,6 +268,10 @@ File::LsColor - Colorize input filenames just like ls does
     # or use the internal mappings
 
     @files = ls_color_internal(@files);
+
+    # or use the defaults (only ANSI colors)
+
+    @files = ls_color_default(@files);
 
 =head1 DESCRIPTION
 
@@ -261,6 +302,11 @@ variable. If the C<LS_COLORS> variable is not set, throws an exception.
 In this case, C<ls_color_internal()> can be used.
 
 In scalar context a string joined by '' is returned.
+
+=head2 ls_color_default()
+
+The same thing as C<ls_color()>, but uses the default LS_COLORS values from GNU
+ls. Those are only ANSI colors.
 
 =head2 ls_color_internal()
 
