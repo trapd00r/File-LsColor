@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 use Test::More tests => 2;
 use File::LsColor qw(ls_color_internal ls_color_custom);
-use Term::ExtendedColor ':attributes';
+
 
 
 is(
