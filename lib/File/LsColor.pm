@@ -5,7 +5,7 @@ BEGIN {
   use Exporter;
   use vars qw($VERSION @ISA @EXPORT_OK);
 
-  $VERSION = '0.126';
+  $VERSION = '0.128';
   @ISA = qw(Exporter);
 
   @EXPORT_OK = qw(
@@ -17,14 +17,6 @@ BEGIN {
 
 use Carp qw(croak);
 use Term::ExtendedColor qw(fg);
-#use Data::Dumper;
-#$Data::Dumper::Terse     = 1;
-#$Data::Dumper::Indent    = 1;
-#$Data::Dumper::Useqq     = 1;
-#$Data::Dumper::Deparse   = 1;
-#$Data::Dumper::Quotekeys = 0;
-#$Data::Dumper::Sortkeys  = 1;
-
 
 my $LS_COLORS = $ENV{LS_COLORS}; # Default
 
@@ -85,7 +77,9 @@ ln=target:pi=38;5;126:ow=38;5;208;1:di=38;5;30:*.pm=38;5;197;1:
 *.sty=38;5;58:*.cfg=1:*.properties=38;5;197;1:*.m4=38;5;196;3:*.tfnt=38;5;140:
 *.tcl=38;5;64;1:*.typelib=38;5;49:*.pfa=38;5;43:*.sed=38;5;130;1:
 *.awk=38;5;148;1:*.svg=38;5;24;1:*.ttf=38;5;69;1:*.sample=38;5;225;1:
-*.example=38;5;225;1:*.un~=38;5;240;3:*.out=38;5;46;1:*.tdy=38;5;214
+*.example=38;5;225;1:*.un~=38;5;240:*.out=38;5;46;1:*.tdy=38;5;214:
+*.mfasl=38;5;73:*.rdf=38;5;144:*.sqlite=38;5;60:*.jsm=38;5;142;1:
+*.jad=38;5;142:*.jar=38;5;142:*.jhtm=38;5;142:*.jsp=38;5;142:*.ru=38;5;142
 ';
 
 $internal_ls_color =~ s/\n//g;
@@ -226,17 +220,17 @@ File::LsColor - Colorize input filenames just like ls does
 
     use File::LsColor qw(ls_color ls_color_custom ls_color_internal);
 
-    for my $file(glob("$ENV{HOME}/*")) {
-      print ls_color($file);
-    }
+    my @files = glob("$ENV{HOME}/*");
+
+    print ls_color($_), "\n" for(@files);
 
     # or specify own pattern
 
-    my @c = ls_color_custom('*.pl=38;5;196;1:*.pm=38;5;220', @files);
+    @files = ls_color_custom('*.pl=38;5;196;1:*.pm=38;5;220', @files);
 
     # or use the internal mappings
 
-    my @c
+    @files = ls_color_internal(@files);
 
 =head1 DESCRIPTION
 
@@ -298,7 +292,8 @@ None required yet.
 
 =head1 COPYRIGHT
 
-Copyright 2011 B<File::LsColor>s L</AUTHOR> and L</CONTRIBUTORS> as listed above.
+Copyright 2011 the B<File::LsColor> L</AUTHOR> and L</CONTRIBUTORS> as listed
+above.
 
 =head1 LICENSE
 
