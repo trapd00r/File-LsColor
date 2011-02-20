@@ -5,7 +5,7 @@ BEGIN {
   use Exporter;
   use vars qw($VERSION @ISA @EXPORT_OK %EXPORT_TAGS);
 
-  $VERSION = '0.142';
+  $VERSION = '0.144';
   @ISA = qw(Exporter);
 
   @EXPORT_OK = qw(
@@ -131,7 +131,7 @@ sub ls_color_default {
   *.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.axa=00;36:
   *.oga=00;36:*.spx=00;36:*.xspf=00;36';
 
-  $LS_COLOR =~ s/\n//g;
+  $LS_COLORS =~ s/\n//g;
 
   ls_color(@_);
 }
