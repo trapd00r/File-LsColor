@@ -5,7 +5,7 @@ BEGIN {
   use Exporter;
   use vars qw($VERSION @ISA @EXPORT_OK %EXPORT_TAGS);
 
-  $VERSION = '0.144';
+  $VERSION = '0.146';
   @ISA = qw(Exporter);
 
   @EXPORT_OK = qw(
@@ -158,7 +158,6 @@ sub ls_color {
       # 38;5;100;1m
         if($ls_colors->{$ft} =~ m/;(\d+;?[1-9]?)$/m) {
           my $n = $1;
-          print "N IS $n\n";
           # Account for bold, italic, underline etc
           if($n =~ m/(\d+);([1-7])/) {
             my $attr = $2;
