@@ -3,12 +3,15 @@ use strict;
 use lib '../lib';
 use File::LsColor qw(ls_color);
 
-
-if(!@ARGV) {
+if(@ARGV) {
+  print "$_\n" for ls_color(\@ARGV);
+}
+else {
   while(<>) {
     print ls_color($_), "\n";
   }
 }
+
 
 
 
@@ -30,7 +33,7 @@ B<ls_color> demonstrates the Perl module L<File::Lscolor>.
 
 =head1 EXAMPLES
 
-  find $HOME/devel | ls_color
+  find $HOME/ | ls_color
 
 =head1 AUTHOR
 
