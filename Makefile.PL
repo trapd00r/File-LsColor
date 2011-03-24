@@ -18,7 +18,9 @@ WriteMakefile1(
   EXE_FILES        => [
     q{bin/ls_color},
   ],
-  PREREQ_PM        => { },
+  PREREQ_PM        => {
+    'Term::ExtendedColor' => 0,
+  },
   MAN1PODS         => { },
   dist             => { COMPRESS => q{gzip -9f},    SUFFIX => q{gz}, },
   clean            => { FILES    => q{File-LsColor-*},                  },
