@@ -5,7 +5,7 @@ BEGIN {
   use Exporter;
   use vars qw($VERSION @ISA @EXPORT_OK %EXPORT_TAGS);
 
-  $VERSION = '0.154';
+  $VERSION = '0.155';
   @ISA = qw(Exporter);
 
   @EXPORT_OK = qw(
@@ -86,7 +86,7 @@ ln=target:pi=38;5;126:ow=38;5;208;1:di=38;5;30:*.pm=38;5;197;1:
 *.mfasl=38;5;73:*.rdf=38;5;144:*.sqlite=38;5;60:*.jsm=38;5;142;1:
 *.jad=38;5;142:*.jar=38;5;142:*.jhtm=38;5;142:*.jsp=38;5;142:*.ru=38;5;142:
 *.torrent=38;5;58:*.fcm=38;5;41:*.fm2=38;5;35:*.htm=38;5;56:*.html=38;5;56:
-*.go=38;5;36;1';
+*.go=38;5;36;1:*.err=38;5;160;1:*.error=38;5;160;1:*.old=38;5;244';
 
 $internal_ls_color =~ s/\n//g;
 
