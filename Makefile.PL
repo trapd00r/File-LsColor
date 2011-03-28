@@ -19,7 +19,7 @@ WriteMakefile1(
     q{bin/ls_color},
   ],
   PREREQ_PM        => {
-    'Term::ExtendedColor' => 0,
+    'Term::ExtendedColor' => '0.182',
   },
   MAN1PODS         => { },
   dist             => { COMPRESS => q{gzip -9f},    SUFFIX => q{gz}, },
