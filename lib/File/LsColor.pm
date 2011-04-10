@@ -5,7 +5,7 @@ BEGIN {
   use Exporter;
   use vars qw($VERSION @ISA @EXPORT_OK %EXPORT_TAGS);
 
-  $VERSION = '0.160';
+  $VERSION = '0.170';
   @ISA = qw(Exporter);
 
   @EXPORT_OK = qw(
@@ -13,10 +13,15 @@ BEGIN {
     ls_color_custom
     ls_color_default
     ls_color_internal
+    get_ls_colors
   );
 
   %EXPORT_TAGS = (
-    all => [ qw(ls_color ls_color_custom ls_color_default ls_color_internal) ],
+    all => [
+      qw(
+      ls_color ls_color_custom ls_color_default ls_color_internal get_ls_colors
+      )
+    ],
   );
 }
 
@@ -87,7 +92,8 @@ ln=target:pi=38;5;126:ow=38;5;208;1:di=38;5;30:*.pm=38;5;197;1:
 *.jad=38;5;142:*.jar=38;5;142:*.jhtm=38;5;142:*.jsp=38;5;142:*.ru=38;5;142:
 *.torrent=38;5;58:*.fcm=38;5;41:*.fm2=38;5;35:*.htm=38;5;125;1:
 *.html=38;5;125;1:*.go=38;5;36;1:*.err=38;5;160;1:*.error=38;5;160;1:
-*.old=38;5;244:*.signature=38;5;206:*.bak=38;5;41;1';
+*.old=38;5;244:*.signature=38;5;206:*.bak=38;5;41;1:*.qcow=38;5;141:
+*.mov=38;5;41:*.MOV=38;5;41';
 
 $internal_ls_color =~ s/\n//g;
 
@@ -156,6 +162,7 @@ sub ls_color {
     chomp $file;
     my($ext) = $file =~ m/^.*\.(.+)$/m;
     for my $ft(keys(%{$ls_colors})) {
+      # First we check against the extensions
       if($ft eq $ext) {
       # 38;5;100;1m
         if($ls_colors->{$ft} =~ m/;(\d+;?[1-9]?)$/m) {
@@ -171,6 +178,7 @@ sub ls_color {
           $file = fg($n, $file);
         }
       }
+      # Next are the file attributes
       else {
         for my $o(qw(di fi pi so ln)) {
           if($ft eq $o) {
@@ -211,6 +219,10 @@ sub ls_color {
     }
   }
   return wantarray() ? @files : join('', @files);
+}
+
+sub get_ls_colors {
+  return _parse_ls_colors()
 }
 
 
@@ -321,6 +333,11 @@ The first argument to C<ls_color_custom()> should be a valid LS_COLORS
 definition, like so:
 
   ls_color_custom("*.pl=38;5;196:*.pm=38;5;197;1", @perl_files);
+
+=head2 get_ls_colors()
+
+Returns a hash reference where a key is the extension and its value is the
+attributes attached to it.
 
 =head1 AUTHOR
 
