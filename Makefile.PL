@@ -16,7 +16,7 @@ WriteMakefile1(
   VERSION_FROM     => q{lib/File/LsColor.pm},
   LICENSE          => q{perl},
   EXE_FILES        => [
-    q{bin/ls_color},
+    glob("bin/*"),
   ],
   PREREQ_PM        => {
     'Term::ExtendedColor' => '0.182',
