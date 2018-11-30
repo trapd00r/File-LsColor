@@ -11,7 +11,7 @@ WriteMakefile1(
   },
 
   NAME             => q{File::LsColor},
-  AUTHOR           => q{Magnus Woldrich <trapd00r@trapd00r.se>},
+  AUTHOR           => q{Magnus Woldrich <m@japh.se>},
   ABSTRACT         => q{Colorize input filenames like ls(1)},
   VERSION_FROM     => q{lib/File/LsColor.pm},
   LICENSE          => q{perl},

@@ -39,12 +39,12 @@ B<ls_color_internal> demonstrates the Perl module L<File::LsColor>.
 
   Magnus Woldrich
   CPAN ID: WOLDRICH
-  magnus@trapd00r.se
+  m@japh.se
   http://japh.se
 
 =head1 REPORTING BUGS
 
-Report bugs on rt.cpan.org or to magnus@trapd00r.se
+Report bugs on rt.cpan.org or to m@japh.se
 
 =head1 COPYRIGHT
 
