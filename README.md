@@ -3,7 +3,7 @@
 
 ![find with lscolors](/extra/ls_color_find.png)
 
-![lookup lscolors](/extra/ls_color_lookup)
+![lookup lscolors](/extra/ls_color_lookup.png)
 
 
 # NAME
