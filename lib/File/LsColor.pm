@@ -5,7 +5,7 @@ BEGIN {
   use Exporter;
   use vars qw($VERSION @ISA @EXPORT_OK %EXPORT_TAGS);
 
-  $VERSION = '0.190';
+  $VERSION = '0.192';
   @ISA = qw(Exporter);
 
   @EXPORT_OK = qw(
@@ -226,7 +226,7 @@ sub ls_color {
       if($ft eq $ext) {
       # 38;5;100;1m
         if($ls_colors->{$ft} =~ m/;(\d+;?[1-9]?)$/m) {
-          my $n = $1;
+          my $n = $1; # color index 0 - 255
           # Account for bold, italic, underline etc
           if($n =~ m/(\d+);([1-7])/) {
             my $attr = $2;
@@ -260,18 +260,6 @@ sub ls_color {
             # No fifo
             elsif( ($ft eq 'pi') and (!-p $file) ) {
               next;
-            }
-
-            if($ls_colors->{$ft} =~ m/;(\d+;?[1-9]?)$/m) {
-              my $n = $1;
-              if($n =~ m/(\d+);([1-7])/) {
-                my $attr = $2;
-                $n = $1;
-                Term::ExtendedColor::autoreset(0);
-                $file = fg($attributes{$2}, $file);
-              }
-              Term::ExtendedColor::autoreset(1);
-              $file = fg($n, $file);
             }
           }
         }
