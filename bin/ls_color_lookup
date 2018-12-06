@@ -1,0 +1,19 @@
+#!/usr/bin/perl
+use strict;
+use warnings FATAL => 'all';
+
+use File::LsColor qw(ls_color_lookup ls_color);
+
+print "What to lookup?\n" and exit if !@ARGV;
+
+
+for my $what(@ARGV) {
+  # the longest entry in my LS_COLORS is *CONTRIBUTORS
+  my $attr = ls_color_lookup($what);
+  $attr = '-' if ! defined $attr;
+
+  printf("% 12s: %s\n", $what, $attr);
+}
+
+
+__END__
