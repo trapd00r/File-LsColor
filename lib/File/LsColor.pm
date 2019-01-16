@@ -5,7 +5,7 @@ BEGIN {
   use Exporter;
   use vars qw($VERSION @ISA @EXPORT_OK %EXPORT_TAGS);
 
-  $VERSION = '0.194';
+  $VERSION = '0.196';
   @ISA = qw(Exporter);
 
   @EXPORT_OK = qw(
@@ -346,7 +346,6 @@ File::LsColor - Colorize input filenames just like ls does
 
     @files = ls_color_default(@files);
 
-    ...
 
     # returns a hashref with all defined filetypes and their attributes
     my $ls_colors = get_ls_colors();
@@ -413,7 +412,7 @@ definition, like so:
 Returns a hash reference where a key is the extension and its value is the
 attributes attached to it.
 
-=head2 lookup_ls_color()
+=head2 lookup_ls_color(), ls_color_lookup()
 
 Given a valid name, returns the defined attributes associated with it.
 Else, returns undef.
