@@ -5,7 +5,7 @@ BEGIN {
   use Exporter;
   use vars qw($VERSION @ISA @EXPORT_OK %EXPORT_TAGS);
 
-  $VERSION = '0.192';
+  $VERSION = '0.194';
   @ISA = qw(Exporter);
 
   @EXPORT_OK = qw(
@@ -223,7 +223,11 @@ sub ls_color {
     my($ext) = $file =~ m/^.*\.(.+)$/m;
     for my $ft(keys(%{$ls_colors})) {
       # First we check against the extensions
-      if($ft eq $ext) {
+      # NOTE:
+      # because of https://github.com/coreutils/coreutils/pull/14
+      # file extension mappings is no longer case sensitive. Therefore we lc the
+      # extension first.
+      if($ft eq lc($ext)) {
       # 38;5;100;1m
         if($ls_colors->{$ft} =~ m/;(\d+;?[1-9]?)$/m) {
           my $n = $1; # color index 0 - 255
