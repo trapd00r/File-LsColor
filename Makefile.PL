@@ -15,6 +15,7 @@ WriteMakefile1(
   ABSTRACT         => q{Colorize input filenames like ls(1)},
   VERSION_FROM     => q{lib/File/LsColor.pm},
   LICENSE          => q{perl},
+  MIN_PERL_VERSION => 5.0040,
   EXE_FILES        => [
     glob("bin/*"),
   ],

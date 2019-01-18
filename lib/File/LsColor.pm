@@ -1,11 +1,12 @@
 package File::LsColor;
 use strict;
+use warnings;
 
 BEGIN {
   use Exporter;
   use vars qw($VERSION @ISA @EXPORT_OK %EXPORT_TAGS);
 
-  $VERSION = '0.196';
+  $VERSION = '0.198';
   @ISA = qw(Exporter);
 
   @EXPORT_OK = qw(
@@ -31,9 +32,11 @@ BEGIN {
 use Carp qw(croak);
 use Term::ExtendedColor qw(fg);
 
-
-# alias for the author who keep typing the words in the wrong order. :)
-*ls_color_lookup = *File::LsColor::lookup_ls_color;
+{
+  no warnings;
+  # alias for the author who keep typing the words in the wrong order. :)
+  *ls_color_lookup = *File::LsColor::lookup_ls_color;
+}
 
 my $LS_COLORS = $ENV{LS_COLORS}; # Default
 

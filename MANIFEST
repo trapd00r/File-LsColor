@@ -11,3 +11,4 @@ t/02-pod-coverage.t
 t/021-synopsis.t
 t/03-ls_color.t
 Changes
+README
