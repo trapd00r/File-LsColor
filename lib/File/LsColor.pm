@@ -6,7 +6,7 @@ BEGIN {
   use Exporter;
   use vars qw($VERSION @ISA @EXPORT_OK %EXPORT_TAGS);
 
-  $VERSION = '0.199';
+  $VERSION = '0.200';
   @ISA = qw(Exporter);
 
   @EXPORT_OK = qw(
@@ -213,6 +213,7 @@ sub ls_color {
 
   if(ref($_[0]) eq 'ARRAY') {
     push(@files, @{$_[0]});
+    shift @_;
   }
   else {
     push(@files, @_);
