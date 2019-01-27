@@ -6,7 +6,7 @@ BEGIN {
   use Exporter;
   use vars qw($VERSION @ISA @EXPORT_OK %EXPORT_TAGS);
 
-  $VERSION = '0.200';
+  $VERSION = '0.300';
   @ISA = qw(Exporter);
 
   @EXPORT_OK = qw(
@@ -33,13 +33,15 @@ use Carp qw(croak);
 use Term::ExtendedColor qw(fg);
 
 {
-  no warnings;
-  # alias for the author who keep typing the words in the wrong order. :)
+# alias for the author who keeps on typing the words in the
+# incorrect order...
+  no warnings 'once';
   *ls_color_lookup = *File::LsColor::lookup_ls_color;
 }
 
 my $LS_COLORS = $ENV{LS_COLORS}; # Default
 
+#<internal LS_COLORS specification
 # yes, this is pretty :)
 # colors from https://github.com/trapd00r/LS_COLORS
 my $internal_ls_color='
@@ -155,11 +157,10 @@ st=38;5;232;48;5;30:tw=48;5;235;38;5;139;3:*LS_COLORS=48;5;89;38;5;197;1;3;4;7:
 *.pi=38;5;7:*.plt=38;5;7:*.pm=38;5;7:*.rb=38;5;7:*.rdf=38;5;7:*.rst=38;5;7:
 *.ru=38;5;7:*.sch=38;5;7:*.sty=38;5;7:*.sug=38;5;7:*.tdy=38;5;7:*.tfm=38;5;7:
 *.tfnt=38;5;7:*.tg=38;5;7:*.vcard=38;5;7:*.vcf=38;5;7:*.xln=38;5;7';
-
+#>
 
 
 $internal_ls_color =~ s/\n//g;
-
 
 # For situations like *.pl=38;5;196;1 (bold and red)
 my %attributes = (
@@ -218,63 +219,55 @@ sub ls_color {
   else {
     push(@files, @_);
   }
-  my %result;
   my $ls_colors = _parse_ls_colors();
 
 
   for my $file(@files) {
     chomp $file;
     my($ext) = $file =~ m/^.*\.(.+)$/m;
-    for my $ft(keys(%{$ls_colors})) {
-      # First we check against the extensions
-      # NOTE:
-      # because of https://github.com/coreutils/coreutils/pull/14
-      # file extension mappings is no longer case sensitive. Therefore we lc the
-      # extension first.
-      if(defined($ext)) {
-        if($ft eq lc($ext)) {
-        # 38;5;100;1m
-          if($ls_colors->{$ft} =~ m/;(\d+;?[1-9]?)$/m) {
-            my $n = $1; # color index 0 - 255
-            # Account for bold, italic, underline etc
-            if($n =~ m/(\d+);([1-7])/) {
-              my $attr = $2;
-              $n = $1;
-              Term::ExtendedColor::autoreset(0);
-              $file = fg($attributes{$2}, $file);
-            }
-            Term::ExtendedColor::autoreset(1);
-            $file = fg($n, $file);
-          }
+
+
+# no extension found. let's check file attributes. this will only
+# work if called with absolute paths or from ./ since we can't stat files that
+# we can't access.
+# https://github.com/trapd00r/File-LsColor/issues/1
+
+    if(!defined($ext)) { # no extension found
+       -l $file and $ext = 'ln'; # symlink
+       -x $file and $ext = 'ex'; # executable
+       -d $file and $ext = 'di'; # beware, dirs have +x
+       -S $file and $ext = 'so'; # socket
+       -p $file and $ext = 'pi'; # fifo, pipe
+       -b $file and $ext = 'bd'; # block device
+       -c $file and $ext = 'ca'; # character special file
+
+# looks like we can't decide on any attribute based on a stat(), so we use the
+# fallback FILE dircolors key.
+
+       $ext = 'fi' unless defined $ext;
+    }
+# we have an extension. is it defined in the ls_colors hash?
+    if(defined($ls_colors->{$ext})) {
+      if($ls_colors->{$ext} =~ m/;(\d+;?[1-9]?)$/m) {
+        my $color_index = $1;
+        print "$ext: $1\n" if $ext eq 'pi';
+        # Account for bold, italic, underline etc
+        if($color_index =~ m/(\d+);([1-7])/) {
+          my $attr = $2;
+          $color_index = $1;
+
+# autoreset controls if the end sequence \e[m should be added or not.
+# if more attributes are to be added, we don't have to add the end sequence just
+# yet.
+          Term::ExtendedColor::autoreset(0);
+          $file = fg($attributes{$attr}, $file);
         }
+# we have added the attributes, if any, now we can apply colors.
+        Term::ExtendedColor::autoreset(1);
+        $file = fg($color_index, $file);
       }
-
-      # Next are the file attributes
-      else {
-        for my $o(qw(di fi pi so ln)) {
-          if($ft eq $o) {
-            # No dir
-            if( ($ft eq 'di') and (!-d $file) ) {
-              next;
-            }
-
-            # No socket
-            elsif( ($ft eq 'so') and (!-S $file) ) {
-              next;
-            }
-
-            # No symlink
-            elsif( ($ft eq 'ln') and (!-l $file) ) {
-              next;
-            }
-
-            # No fifo
-            elsif( ($ft eq 'pi') and (!-p $file) ) {
-              next;
-            }
-          }
-        }
-      }
+    }
+    else {
     }
   }
   return wantarray() ? @files : join('', @files);
@@ -362,10 +355,6 @@ File::LsColor - Colorize input filenames just like ls does
     my $dir_color = lookup_ls_color('di');
 
 
-
-get_ls_colors()
-
-
 =head1 DESCRIPTION
 
 This module provides functionality for using the LS_COLORS variable for
@@ -451,4 +440,4 @@ the same terms as Perl itself.
 
 =cut
 
-# vim: set ts=2 et sw=2:
+# vim: ft=perl:fdm=marker:fmr=#<,#>:fen:et:sw=2:
