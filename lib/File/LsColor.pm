@@ -250,7 +250,6 @@ sub ls_color {
     if(defined($ls_colors->{$ext})) {
       if($ls_colors->{$ext} =~ m/;(\d+;?[1-9]?)$/m) {
         my $color_index = $1;
-        print "$ext: $1\n" if $ext eq 'pi';
         # Account for bold, italic, underline etc
         if($color_index =~ m/(\d+);([1-7])/) {
           my $attr = $2;
