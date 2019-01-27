@@ -1,9 +1,8 @@
 [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=65SFZJ25PSKG8&currency_code=SEK&source=url) - Every tiny cent helps a lot!
 
+![lscolor_rm](/extra/ls_color_rm.png)
 
-![find with lscolors](/extra/ls_color_find.png)
-
-![lookup lscolors](/extra/ls_color_lookup.png)
+![lscolor_find](/extra/ls_color_find.png)
 
 
 # NAME
@@ -46,7 +45,6 @@ File::LsColor - Colorize input filenames just like ls does
 
     my $dir_color = lookup_ls_color('di');
 
-get\_ls\_colors()
 
 # DESCRIPTION
 
