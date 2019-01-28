@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 use strict;
-use Test::More tests => 3;
-use File::LsColor qw(ls_color_custom ls_color ls_color_lookup);
+use Test::More tests => 4;
+use File::LsColor qw(ls_color_custom ls_color can_ls_color);
 
 is(
   (ls_color_custom('*.c=38;5;100;1', 'main.c'))[0],
@@ -21,12 +21,14 @@ sub mocklscolors {
 }
 
 
-is(ls_color_lookup('pl'),
+is(can_ls_color('pl'),
   '38;5;197',
-  'ls_color_lookup() OK',
+  'can_ls_color() OK',
 );
 
-is(ls_color_lookup('pm'),
+is(can_ls_color('pm'),
   '48;5;220;1;3;7',
-  'ls_color_lookup() OK',
+  'can_ls_color() OK',
 );
+
+is(can_ls_color('verylongandnonexistanstextension'), undef, 'can_ls_color() OK');

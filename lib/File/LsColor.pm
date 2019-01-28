@@ -6,7 +6,7 @@ BEGIN {
   use Exporter;
   use vars qw($VERSION @ISA @EXPORT_OK %EXPORT_TAGS);
 
-  $VERSION = '0.300';
+  $VERSION = '0.302';
   @ISA = qw(Exporter);
 
   @EXPORT_OK = qw(
@@ -15,7 +15,7 @@ BEGIN {
     ls_color_default
     ls_color_internal
     get_ls_colors
-    lookup_ls_color
+    can_ls_color
     ls_color_lookup
   );
 
@@ -23,7 +23,7 @@ BEGIN {
     all => [
       qw(
       ls_color ls_color_custom ls_color_default ls_color_internal
-      get_ls_colors lookup_ls_color
+      get_ls_colors can_ls_color
       )
     ],
   );
@@ -31,13 +31,6 @@ BEGIN {
 
 use Carp qw(croak);
 use Term::ExtendedColor qw(fg);
-
-{
-# alias for the author who keeps on typing the words in the
-# incorrect order...
-  no warnings 'once';
-  *ls_color_lookup = *File::LsColor::lookup_ls_color;
-}
 
 my $LS_COLORS = $ENV{LS_COLORS}; # Default
 
@@ -296,21 +289,19 @@ sub _parse_ls_colors {
   return $ft;
 }
 
-sub lookup_ls_color {
+sub can_ls_color {
   my $ft = shift;
   my $table = get_ls_colors();
 
-  return (exists($table->{$ft}) ? $table->{$ft} : undef);
+  return ($table->{$ft} ? $table->{$ft} : undef);
+#  return (exists($table->{$ft}) ? $table->{$ft} : undef);
 }
-
-
 
 
 1;
 
 
 __END__
-
 
 =pod
 
@@ -351,7 +342,11 @@ File::LsColor - Colorize input filenames just like ls does
 
     # what's the defined attributes for directories?
 
-    my $dir_color = lookup_ls_color('di');
+    my $dir_color = can_ls_color('di');
+
+    # can we apply attributes to this filetype?
+    my $filetype = shift;
+    printf "%s can be colored.\n" if can_ls_color($filetype);
 
 
 =head1 DESCRIPTION
@@ -407,7 +402,7 @@ definition, like so:
 Returns a hash reference where a key is the extension and its value is the
 attributes attached to it.
 
-=head2 lookup_ls_color(), ls_color_lookup()
+=head2 can_ls_color()
 
 Given a valid name, returns the defined attributes associated with it.
 Else, returns undef.
