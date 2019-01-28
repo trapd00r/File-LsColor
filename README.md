@@ -104,6 +104,20 @@ attributes attached to it.
 Given a valid name, returns the defined attributes associated with it.
 Else, returns undef.
 
+
+## File::LsColor out in the wild
+
+* [fileutils-color](https://github.com/trapd00r/fileutils-color)
+
+* [pimpd2](https://github.com/trapd00r/pimpd2)
+
+* [time-spent-in-vim](https://github.com/trapd00r/time-spent-in-vim)
+
+* [accesstail](https://github.com/trapd00r/accesstail)
+
+* [makedist](https://github.com/trapd00r/makedist)
+
+
 # AUTHOR
 
     Magnus Woldrich
@@ -121,7 +135,7 @@ None required yet.
 
 # COPYRIGHT
 
-Copyright 2011, 2018 the **File::LsColor** ["AUTHOR"](#author) and
+Copyright 2011, 2018, 2019- the **File::LsColor** ["AUTHOR"](#author) and
 ["CONTRIBUTORS"](#contributors) as listed above.
 
 # LICENSE
