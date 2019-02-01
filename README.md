@@ -1,13 +1,12 @@
 [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=65SFZJ25PSKG8&currency_code=SEK&source=url) - Every tiny cent helps a lot!
 <img src="/extra/ls_color_pacman.png" align="right">
-![lscolor_rm](/extra/ls_color_rm.png)
-
-
-
 
 # NAME
 
 File::LsColor - Colorize input filenames just like ls does
+
+![lscolor_rm](/extra/ls_color_rm.png)
+
 
 # SYNOPSIS
 
