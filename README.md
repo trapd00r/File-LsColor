@@ -2,7 +2,7 @@
 
 ![lscolor_rm](/extra/ls_color_rm.png)
 
-![lscolor_find](/extra/ls_color_find.png)
+![lscolor_pacman](/extra/ls_color_pacman.png)
 
 
 # NAME
