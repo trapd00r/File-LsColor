@@ -6,7 +6,7 @@ BEGIN {
   use Exporter;
   use vars qw($VERSION @ISA @EXPORT_OK %EXPORT_TAGS);
 
-  $VERSION = '0.302';
+  $VERSION = '0.304';
   @ISA = qw(Exporter);
 
   @EXPORT_OK = qw(
@@ -27,6 +27,12 @@ BEGIN {
       )
     ],
   );
+}
+
+# alias for compatibility reasons with File::LsColor prior to 0.300
+{
+  no warnings 'once';
+  *ls_color_lookup = *can_ls_color;
 }
 
 use Carp qw(croak);
@@ -406,6 +412,10 @@ attributes attached to it.
 
 Given a valid name, returns the defined attributes associated with it.
 Else, returns undef.
+
+=head2 ls_color_lookup()
+
+The same as can_ls_color(), exportable because of compatibility reasons.
 
 =head1 AUTHOR
 
