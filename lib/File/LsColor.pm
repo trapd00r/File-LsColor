@@ -6,7 +6,7 @@ BEGIN {
   use Exporter;
   use vars qw($VERSION @ISA @EXPORT_OK %EXPORT_TAGS);
 
-  $VERSION = '0.316';
+  $VERSION = '0.333';
   @ISA = qw(Exporter);
 
   @EXPORT_OK = qw(
@@ -310,8 +310,17 @@ sub can_ls_color {
   my $ft = shift;
   my $table = get_ls_colors();
 
-  return ($table->{$ft} ? $table->{$ft} : undef);
-#  return (exists($table->{$ft}) ? $table->{$ft} : undef);
+
+# if called with an extension that exists, return it.
+  return $table->{$ft} if $table->{$ft};
+
+# else, check if called with a filename.ext
+# return undef if all else fails
+  {
+    no warnings 'uninitialized';
+    my($ext) = $ft =~ m/^.*\.(.+)$/m;
+    return $table->{$ext} ? $table->{$ext} : undef;
+  }
 }
 
 
@@ -366,6 +375,12 @@ File::LsColor - Colorize input filenames just like ls does
     # can we apply attributes to this filetype?
     my $filetype = shift;
     printf "%s can be colored.\n" if can_ls_color($filetype);
+
+# apply terminal color even if we can't use LS_COLORS to do so.
+    my $file_with_extension = 'foobar.flac';
+    printf "%s looks nice.\n", can_ls_color($file_with_extension)
+      ? ls_color($file_with_extension)
+      : Term::ExtendedColor::fg(32, $file_with_extension);
 
 
 =head1 DESCRIPTION
@@ -436,6 +451,7 @@ The same as can_ls_color(), exportable because of compatibility reasons.
   CPAN ID: WOLDRICH
   m@japh.se
   http://japh.se
+  https://github.com/trapd00r
 
 =head1 REPORTING BUGS
 

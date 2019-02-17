@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 use strict;
-use Test::More tests => 4;
+use Test::More tests => 5;
 use File::LsColor qw(ls_color_custom ls_color can_ls_color);
 
 is(
@@ -15,8 +15,9 @@ is(
 
 sub mocklscolors {
   my $mock;
-  $mock->{pl} = '38;5;197';
-  $mock->{pm} = '48;5;220;1;3;7';
+  $mock->{pl}  = '38;5;197';
+  $mock->{pm}  = '48;5;220;1;3;7';
+  $mock->{mp3} = '38;5;220';
   return $mock;
 }
 
@@ -28,6 +29,11 @@ is(can_ls_color('pl'),
 
 is(can_ls_color('pm'),
   '48;5;220;1;3;7',
+  'can_ls_color() OK',
+);
+
+is(can_ls_color('filename_with_extension.mp3'),
+  '38;5;220',
   'can_ls_color() OK',
 );
 
