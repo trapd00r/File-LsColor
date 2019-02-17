@@ -4,9 +4,13 @@ use ExtUtils::MakeMaker;
 
 WriteMakefile1(
   META_MERGE => {
-    resources => {
-      repository => q{https://github.com/trapd00r/File-LsColor},
-      bugtracker => q{https://github.com/trapd00r/File-LsColor/issues},
+      resources => {
+          repository => {
+            type       => 'git',
+            url        => 'https://github.com/trapd00r/File-LsColor.git',
+            web        => 'https://github.com/trapd00r/File-LsColor',
+            bugtracker => 'https://github.com/trapd00r/File-LsColor/issues',
+      },
     },
   },
 
@@ -58,5 +62,3 @@ sub WriteMakefile1 {
 
   WriteMakefile(%params);
 }
-
-
