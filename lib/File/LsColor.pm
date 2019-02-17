@@ -6,7 +6,7 @@ BEGIN {
   use Exporter;
   use vars qw($VERSION @ISA @EXPORT_OK %EXPORT_TAGS);
 
-  $VERSION = '0.333';
+  $VERSION = '0.334';
   @ISA = qw(Exporter);
 
   @EXPORT_OK = qw(
@@ -317,7 +317,7 @@ sub can_ls_color {
 # else, check if called with a filename.ext
 # return undef if all else fails
   {
-    no warnings 'uninitialized';
+    no warnings;
     my($ext) = $ft =~ m/^.*\.(.+)$/m;
     return $table->{$ext} ? $table->{$ext} : undef;
   }
