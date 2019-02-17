@@ -4,12 +4,13 @@ use ExtUtils::MakeMaker;
 
 WriteMakefile1(
   META_MERGE => {
-      resources => {
-          repository => {
-            type       => 'git',
-            url        => 'https://github.com/trapd00r/File-LsColor.git',
-            web        => 'https://github.com/trapd00r/File-LsColor',
-            bugtracker => 'https://github.com/trapd00r/File-LsColor/issues',
+    q(meta-spec) => { version => 2 },
+    resources => {
+      repository => {
+        type       => 'git',
+        url        => 'https://github.com/trapd00r/File-LsColor.git',
+        web        => 'https://github.com/trapd00r/File-LsColor',
+        bugtracker => 'https://github.com/trapd00r/File-LsColor/issues',
       },
     },
   },
