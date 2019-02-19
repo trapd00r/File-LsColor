@@ -6,7 +6,7 @@ BEGIN {
   use Exporter;
   use vars qw($VERSION @ISA @EXPORT_OK %EXPORT_TAGS);
 
-  $VERSION = '0.335';
+  $VERSION = '0.336';
   @ISA = qw(Exporter);
 
   @EXPORT_OK = qw(
@@ -376,7 +376,7 @@ File::LsColor - Colorize input filenames just like ls does
     my $filetype = shift;
     printf "%s can be colored.\n" if can_ls_color($filetype);
 
-# apply terminal color even if we can't use LS_COLORS to do so.
+    # apply terminal color even if we can't use LS_COLORS to do so.
     my $file_with_extension = 'foobar.flac';
     printf "%s looks nice.\n", can_ls_color($file_with_extension)
       ? ls_color($file_with_extension)
@@ -405,7 +405,7 @@ None by default.
 
 Arguments: @files | \@files
 
-Returns:   $files | @files
+Returns:   @files | @files
 
 Returns a list of filenames colored as specified by the environment C<LS_COLORS>
 variable. If the C<LS_COLORS> variable is not set, throws an exception.
@@ -437,6 +437,9 @@ Returns a hash reference where a key is the extension and its value is the
 attributes attached to it.
 
 =head2 can_ls_color()
+
+Arguments: $file
+Returns:   $attributes
 
 Given a valid name, returns the defined attributes associated with it.
 Else, returns undef.
