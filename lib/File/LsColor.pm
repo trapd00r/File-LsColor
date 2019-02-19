@@ -6,7 +6,7 @@ BEGIN {
   use Exporter;
   use vars qw($VERSION @ISA @EXPORT_OK %EXPORT_TAGS);
 
-  $VERSION = '0.340';
+  $VERSION = '0.342';
   @ISA = qw(Exporter);
 
   @EXPORT_OK = qw(
@@ -263,7 +263,7 @@ sub ls_color {
 # the input looks like a directory; therefore we use the fallback FILE dircolors
 # key
     else {
-      $ext = 'fi';
+#      $ext = 'fi';
     }
 
 # we have an extension. is it defined in the ls_colors hash?
