@@ -6,7 +6,7 @@ BEGIN {
   use Exporter;
   use vars qw($VERSION @ISA @EXPORT_OK %EXPORT_TAGS);
 
-  $VERSION = '0.342';
+  $VERSION = '0.350';
   @ISA = qw(Exporter);
 
   @EXPORT_OK = qw(
@@ -17,6 +17,7 @@ BEGIN {
     get_ls_colors
     can_ls_color
     ls_color_lookup
+    parse_ls_colors
   );
 
   %EXPORT_TAGS = (
@@ -218,7 +219,7 @@ sub ls_color {
   else {
     push(@files, @_);
   }
-  my $ls_colors = _parse_ls_colors();
+  my $ls_colors = parse_ls_colors();
 
 
   for my $file(@files) {
@@ -267,37 +268,42 @@ sub ls_color {
     }
 
 # we have an extension. is it defined in the ls_colors hash?
-    if(defined($ls_colors->{$ext})) {
-      if($ls_colors->{$ext} =~ m/;(\d+;?[1-9]?)$/m) {
-        my $color_index = $1;
-        # Account for bold, italic, underline etc
-        if($color_index =~ m/(\d+);([1-7])/) {
-          my $attr = $2;
-          $color_index = $1;
+    {
+      no warnings;
+      if(defined($ls_colors->{$ext})) {
+        if($ls_colors->{$ext} =~ m/;(\d+;?[1-9]?)$/m) {
+          my $color_index = $1;
+          # Account for bold, italic, underline etc
+          if($color_index =~ m/(\d+);([1-7])/) {
+            my $attr = $2;
+            $color_index = $1;
 
 # autoreset controls if the end sequence \e[m should be added or not.
 # if more attributes are to be added, we don't have to add the end sequence just
 # yet.
-          Term::ExtendedColor::autoreset(0);
-          $file = fg($attributes{$attr}, $file);
-        }
+            Term::ExtendedColor::autoreset(0);
+            $file = fg($attributes{$attr}, $file);
+          }
 # we have added the attributes, if any, now we can apply colors.
-        Term::ExtendedColor::autoreset(1);
-        $file = fg($color_index, $file);
+          Term::ExtendedColor::autoreset(1);
+          $file = fg($color_index, $file);
+        }
       }
-    }
-    else {
-    }
+    } # end no warnings
   }
+
   return wantarray() ? @files : join('', @files);
 }
 
 sub get_ls_colors {
-  return _parse_ls_colors()
+  return parse_ls_colors()
 }
 
 
-sub _parse_ls_colors {
+sub parse_ls_colors {
+  if(@_) {
+    $LS_COLORS = shift @_;
+  }
   my $ft;
 
   if( (!defined($LS_COLORS)) or ($LS_COLORS eq '') ) {
@@ -457,6 +463,18 @@ Else, returns undef.
 =head2 ls_color_lookup()
 
 The same as can_ls_color(), exportable because of compatibility reasons.
+
+=head2 parse_ls_colors()
+  Arguments: $string
+  Returns:   \%hash
+
+Returns a hashref with extension => attribute mappings, i.e:
+
+    '7z'  => '01;31',
+    'aac' => '00;36',
+    'ace' => '01;31',
+    'anx' => '01;35',
+    'arj' => '01;31',
 
 =head1 AUTHOR
 

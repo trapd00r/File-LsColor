@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 use strict;
-use Test::More tests => 5;
-use File::LsColor qw(ls_color_custom ls_color can_ls_color);
+use Test::More tests => 6;
+use File::LsColor qw(ls_color_custom ls_color can_ls_color parse_ls_colors);
 
 is(
   (ls_color_custom('*.c=38;5;100;1', 'main.c'))[0],
@@ -11,7 +11,7 @@ is(
 
 
 # since we can't modify the LS_COLORS env var here we have to do it like this
-*File::LsColor::_parse_ls_colors = *mocklscolors;
+*File::LsColor::parse_ls_colors = *mocklscolors;
 
 sub mocklscolors {
   my $mock;
@@ -38,3 +38,7 @@ is(can_ls_color('filename_with_extension.mp3'),
 );
 
 is(can_ls_color('verylongandnonexistanstextension'), undef, 'can_ls_color() OK');
+
+my $parsed = parse_ls_colors('.patch=31;1:*MANIFEST=38;5;243');
+
+is($parsed->{patch}, '31;1', 'parse_ls_colors() OK');
