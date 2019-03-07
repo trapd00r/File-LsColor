@@ -25,7 +25,7 @@ WriteMakefile1(
     glob("bin/*"),
   ],
   PREREQ_PM        => {
-    'Term::ExtendedColor' => '0.182',
+    'Term::ExtendedColor' => '0.500',
   },
   MAN1PODS         => { },
   dist             => { COMPRESS => q{gzip -9f},    SUFFIX => q{gz}, },
