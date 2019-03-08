@@ -1,5 +1,5 @@
 #!/bin/sh
-printf -- "- environment LSCOLORS\n"
+printf  "environment LSCOLORS\n"
 for x in Makefile{,.PL} foo.{p{l,m},tar,gz,zip,png,mp3,flac,jpg} dir/ README; do
-  echo $x;
+  echo "  $x";
 done | ls_color
