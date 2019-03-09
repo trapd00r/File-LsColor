@@ -383,7 +383,10 @@ File::LsColor - Colorize input filenames just like ls does
       ls_color_internal
       get_ls_colors
       can_ls_color
+      ls_color_lookup
+      parse_ls_colors
     );
+
 
     my @files = glob("$ENV{HOME}/*");
 
