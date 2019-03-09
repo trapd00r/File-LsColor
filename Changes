@@ -11,6 +11,7 @@
       * named pipes
       * block devices
       * character special files
+
     keep in mind that since a stat() needs to take place, this will only work
     with resolvable paths to real files.
   - the GNU default dircolors have been updated.
