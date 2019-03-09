@@ -6,7 +6,7 @@ BEGIN {
   use Exporter;
   use vars qw($VERSION @ISA @EXPORT_OK %EXPORT_TAGS);
 
-  $VERSION = '0.350';
+  $VERSION = '0.499';
   @ISA = qw(Exporter);
 
   @EXPORT_OK = qw(
@@ -24,7 +24,7 @@ BEGIN {
     all => [
       qw(
       ls_color ls_color_custom ls_color_default ls_color_internal
-      get_ls_colors can_ls_color
+      get_ls_colors can_ls_color ls_color_lookup parse_ls_colors
       )
     ],
   );
@@ -39,6 +39,7 @@ BEGIN {
 use Carp qw(croak);
 use Term::ExtendedColor qw(fg);
 
+my $extracted_ls_colors;
 my $LS_COLORS = $ENV{LS_COLORS}; # Default
 
 #<internal LS_COLORS specification
@@ -176,37 +177,51 @@ my %attributes = (
 # Alright, use our own LS_COLORS definition
 sub ls_color_internal {
   $LS_COLORS = $internal_ls_color;
+  $extracted_ls_colors = parse_ls_colors($LS_COLORS);
   ls_color(@_);
 }
 
 sub ls_color_custom {
   $LS_COLORS = shift;
+  $extracted_ls_colors = parse_ls_colors($LS_COLORS);
   ls_color(@_);
 }
 
 # Those are the default LS_COLORS mappings from GNU ls
 sub ls_color_default {
-  $LS_COLORS = '*.tar=01;31:*.tgz=01;31:*.arj=01;31:*.taz=01;31:*.lzh=01;31:
-  *.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.zip=01;31:*.z=01;31:*.Z=01;31:
-  *.dz=01;31:*.gz=01;31:*.lz=01;31:*.xz=01;31:*.bz2=01;31:*.bz=01;31:
-  *.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:
-  *.rar=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:
-  *.jpg=01;35:*.jpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:
-  *.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:
-  *.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:
-  *.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.ogm=01;35:*.mp4=01;35:
-  *.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:
-  *.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:
-  *.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:
-  *.cgm=01;35:*.emf=01;35:*.axv=01;35:*.anx=01;35:*.ogv=01;35:*.ogx=01;35:
-  *.aac=00;36:*.au=00;36:*.flac=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:
-  *.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.axa=00;36:
-  *.oga=00;36:*.spx=00;36:*.xspf=00;36';
+$LS_COLORS= '
+  rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:
+  cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:
+  ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:
+  *.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:
+  *.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:
+  *.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:
+  *.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:
+  *.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:
+  *.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:
+  *.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:
+  *.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35
+  :*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:
+  *.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:
+  *.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:
+  *.webm=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:
+  *.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:
+  *.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:
+  *.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:
+  *.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:
+  *.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:
+  *.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36';
 
-  $LS_COLORS =~ s/\n//g;
+  $LS_COLORS =~ s/\n|\s+//g;
 
+  $extracted_ls_colors = parse_ls_colors($LS_COLORS);
   ls_color(@_);
 }
+
+
+# none of the ls_color_* variations are called, so we use the the
+# LS_COLORS defined in the environment variable.
+$extracted_ls_colors = parse_ls_colors($LS_COLORS);
 
 
 sub ls_color {
@@ -219,12 +234,16 @@ sub ls_color {
   else {
     push(@files, @_);
   }
-  my $ls_colors = parse_ls_colors();
 
 
   for my $file(@files) {
     chomp $file;
-    my($ext) = $file =~ m/^.*\.(.+)$/m;
+    next if $file =~ m/^\s+$/;
+# it's important to keep the dot if there is one. If you remove the dot,
+# directories named bin/ can be miscolored given a key like
+# *.bin=38;5;220
+
+    my($ext) = $file =~ m/.*([.]+.+)$/;
 
 # since we need to stat files, we need a real filename that's not padded with
 # whitespace.
@@ -243,57 +262,46 @@ sub ls_color {
 # we can't access.
 # https://github.com/trapd00r/File-LsColor/issues/1
 
-    if(!defined($ext)) {
-       -l $real_file and $ext = 'ln'; # symlink
-       -x $real_file and $ext = 'ex'; # executable
-       -d $real_file and $ext = 'di'; # beware, dirs have +x
-       -S $real_file and $ext = 'so'; # socket
-       -p $real_file and $ext = 'pi'; # fifo, pipe
-       -b $real_file and $ext = 'bd'; # block device
-       -c $real_file and $ext = 'ca'; # character special file
+# ./recup_dir.5/
+    -d $real_file and $ext = 'di';
 
-    }
+    if(!defined($ext)) {
+      -l $real_file and $ext = 'ln'; # symlink
+      -x $real_file and $ext = 'ex'; # executable
+      -d $real_file and $ext = 'di'; # beware, dirs have +x
+      -S $real_file and $ext = 'so'; # socket
+      -p $real_file and $ext = 'pi'; # fifo, pipe
+      -b $real_file and $ext = 'bd'; # block device
+      -c $real_file and $ext = 'ca'; # character special file
 
 # special case for directories that we can't stat, but we can still safely
 # assume that they are in fact dirs.
-    if( (not defined $ext) and ($file =~ m{/$}) ) {
-      $ext = 'di';
+
+      $real_file =~ m{/$} and $ext = 'di';
     }
 
-# looks like we can't decide on any attribute based on a stat(), neither does
-# the input looks like a directory; therefore we use the fallback FILE dircolors
-# key
+    if(!defined($ext)) {
+# Since these:
+#   Makefile
+#   README
+#   *Makefile.PL
+# are all perfectly valid keys
+      $ext = $real_file;
+    }
+
+    if(exists($extracted_ls_colors->{$real_file})) {
+      $file = fg($extracted_ls_colors->{$real_file}, $file);
+    }
+    elsif(exists($extracted_ls_colors->{$ext})) {
+      $file = fg($extracted_ls_colors->{$ext}, $file);
+    }
     else {
-#      $ext = 'fi';
+#      $file = fg(32, $file);
     }
-
-# we have an extension. is it defined in the ls_colors hash?
-    {
-      no warnings;
-      if(defined($ls_colors->{$ext})) {
-        if($ls_colors->{$ext} =~ m/;(\d+;?[1-9]?)$/m) {
-          my $color_index = $1;
-          # Account for bold, italic, underline etc
-          if($color_index =~ m/(\d+);([1-7])/) {
-            my $attr = $2;
-            $color_index = $1;
-
-# autoreset controls if the end sequence \e[m should be added or not.
-# if more attributes are to be added, we don't have to add the end sequence just
-# yet.
-            Term::ExtendedColor::autoreset(0);
-            $file = fg($attributes{$attr}, $file);
-          }
-# we have added the attributes, if any, now we can apply colors.
-          Term::ExtendedColor::autoreset(1);
-          $file = fg($color_index, $file);
-        }
-      }
-    } # end no warnings
   }
-
   return wantarray() ? @files : join('', @files);
 }
+
 
 sub get_ls_colors {
   return parse_ls_colors()
@@ -304,31 +312,44 @@ sub parse_ls_colors {
   if(@_) {
     $LS_COLORS = shift @_;
   }
-  my $ft;
 
   if( (!defined($LS_COLORS)) or ($LS_COLORS eq '') ) {
     croak("LS_COLORS variable not set! Nothing to do...\n");
   }
+# *.flac=38;5;196
+  my @entities =  split(/:/, $LS_COLORS);
 
-  for(split(/:/, $LS_COLORS)) {
-    if($_ =~ m/\*\.([\w.]+)=([0-9;]+)/) {
-      $ft->{$1} = $2;
-    }
-    # di, fi, tw, or, ex, pi etcetera
-    elsif($_ =~ m/(\w+)=([0-9;]+)/) {
-      $ft->{$1} = $2;
-    }
+  my %ft;
+  for my $ent(@entities) {
+# account for:
+#   *.flac - but keep the dot in the extension
+#   *MANIFEST
+    my ($filetype, $attributes) = $ent =~ m/[*]*(.?\S+)=([\d;]+|target)/;
+#    print "extracted ft: $filetype | attr: $attributes\n";
+    $ft{$filetype} = $attributes;
   }
-  return $ft;
+
+# if symlink value is target, we use the target key's value
+#  if($ft{ln} eq 'target') {
+#    $ft{ln} = $ft{target};
+#  }
+
+# account for:
+#  *.flac
+#  *MANIFEST
+  return \%ft;
 }
 
 sub can_ls_color {
   my $ft = shift;
   my $table = get_ls_colors();
 
+  $ft =~ s/^\s+//;
+
 
 # if called with an extension that exists, return it.
   return $table->{$ft} if $table->{$ft};
+  return $table->{".$ft"} if $table->{".$ft"};
 
 # else, check if called with a filename.ext
 # return undef if all else fails

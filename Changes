@@ -1,4 +1,16 @@
-The File::LsColor project uses git for versioning. Please refer to the git
-repository if you're looking for a detailed list of changes.
-
-See https://github.com/trapd00r/File-LsColor
+0.490  2019-03-09
+  - properly support dircolors keys with a wildcard and no extension, for
+    example *MANIFEST, *README
+  - can_ls_color() can now accept whitespace padded queries as well as both a
+    naked extension and a full filname, e.g perl_is_best.pm
+  - now properly support the following file attributes:
+      * symlink
+      * executable
+      * directories
+      * sockets
+      * named pipes
+      * block devices
+      * character special files
+    keep in mind that since a stat() needs to take place, this will only work
+    with resolvable paths to real files.
+  - the GNU default dircolors have been updated.

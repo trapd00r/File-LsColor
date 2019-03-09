@@ -4,7 +4,7 @@ bin/ls_color_default
 bin/ls_color_internal
 lib/File/LsColor.pm
 Makefile.PL
-MANIFEST			This list of files
+MANIFEST
 t/00-load.t
 t/01-pod.t
 t/02-pod-coverage.t
@@ -12,3 +12,7 @@ t/021-synopsis.t
 t/03-ls_color.t
 Changes
 README
+testscripts/lsc-default.sh
+testscripts/lsc-env.sh
+testscripts/lsc-internal.sh
+testscripts/run.sh
