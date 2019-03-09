@@ -1,4 +1,4 @@
-0.490  2019-03-09
+0.492  2019-03-09
   - properly support dircolors keys with a wildcard and no extension, for
     example *MANIFEST, *README
   - can_ls_color() can now accept whitespace padded queries as well as both a
