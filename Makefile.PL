@@ -4,13 +4,20 @@ use ExtUtils::MakeMaker;
 
 WriteMakefile1(
   META_MERGE => {
-    q(meta-spec) => { version => 2 },
+    q(meta-spec) => {
+      version => 2
+    },
+
     resources => {
+      homepage   => q{http://japh.se/dev/file-lscolor/},
+      bugtracker => {
+        web    => q{https://github.com/trapd00r/File-LsColor/issues},
+        mailto => q{m@japh.se},
+      },
       repository => {
-        type       => 'git',
-        url        => 'https://github.com/trapd00r/File-LsColor.git',
-        web        => 'https://github.com/trapd00r/File-LsColor',
-        bugtracker => 'https://github.com/trapd00r/File-LsColor/issues',
+        type  => 'git',
+        url   => 'https://github.com/trapd00r/File-LsColor.git',
+        web   => 'https://github.com/trapd00r/File-LsColor',
       },
     },
   },
@@ -21,12 +28,12 @@ WriteMakefile1(
   VERSION_FROM     => q{lib/File/LsColor.pm},
   LICENSE          => q{perl},
   MIN_PERL_VERSION => 5.0040,
-  EXE_FILES        => [
-    glob("bin/*"),
-  ],
+  EXE_FILES        => [ glob("bin/*") ],
+
   PREREQ_PM        => {
-    'Term::ExtendedColor' => '0.500',
+    q{Term::ExtendedColor} => q{0.500},
   },
+
   MAN1PODS         => { },
   dist             => { COMPRESS => q{gzip -9f},    SUFFIX => q{gz}, },
   clean            => { FILES    => q{File-LsColor-*},                  },
