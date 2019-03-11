@@ -6,7 +6,7 @@ BEGIN {
   use Exporter;
   use vars qw($VERSION @ISA @EXPORT_OK %EXPORT_TAGS);
 
-  $VERSION = '0.493';
+  $VERSION = '0.495';
   @ISA = qw(Exporter);
 
   @EXPORT_OK = qw(
@@ -36,13 +36,11 @@ BEGIN {
   *ls_color_lookup = *can_ls_color;
 }
 
-use Carp qw(croak);
+#use Carp qw(croak);
 use Term::ExtendedColor qw(fg);
 
-my $extracted_ls_colors;
-my $LS_COLORS = $ENV{LS_COLORS}; # Default
 
-#<internal LS_COLORS specification
+#<LS_COLORS specifications
 # yes, this is pretty :)
 # colors from https://github.com/trapd00r/LS_COLORS
 my $internal_ls_color='
@@ -158,10 +156,41 @@ st=38;5;232;48;5;30:tw=48;5;235;38;5;139;3:*LS_COLORS=48;5;89;38;5;197;1;3;4;7:
 *.pi=38;5;7:*.plt=38;5;7:*.pm=38;5;7:*.rb=38;5;7:*.rdf=38;5;7:*.rst=38;5;7:
 *.ru=38;5;7:*.sch=38;5;7:*.sty=38;5;7:*.sug=38;5;7:*.tdy=38;5;7:*.tfm=38;5;7:
 *.tfnt=38;5;7:*.tg=38;5;7:*.vcard=38;5;7:*.vcf=38;5;7:*.xln=38;5;7';
-#>
 
 
 $internal_ls_color =~ s/\n//g;
+
+my $ls_colors_default = '
+  rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:
+  cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:
+  ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:
+  *.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:
+  *.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:
+  *.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:
+  *.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:
+  *.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:
+  *.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:
+  *.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:
+  *.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35
+  :*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:
+  *.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:
+  *.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:
+  *.webm=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:
+  *.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:
+  *.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:
+  *.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:
+  *.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:
+  *.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:
+  *.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36';
+
+$ls_colors_default =~ s/\n|\s+//g;
+#>
+
+# if LS_COLORS environment variable is unset, we use the default gnu
+# specification from dircolors.
+
+my $extracted_ls_colors;
+my $LS_COLORS = defined($ENV{LS_COLORS}) ? $ENV{LS_COLORS} : $ls_colors_default;
 
 # For situations like *.pl=38;5;196;1 (bold and red)
 my %attributes = (
@@ -313,9 +342,9 @@ sub parse_ls_colors {
     $LS_COLORS = shift @_;
   }
 
-  if( (!defined($LS_COLORS)) or ($LS_COLORS eq '') ) {
-    croak("LS_COLORS variable not set! Nothing to do...\n");
-  }
+#  if( (!defined($LS_COLORS)) or ($LS_COLORS eq '') ) {
+#    croak("LS_COLORS variable not set! Nothing to do...\n");
+#  }
 # *.flac=38;5;196
   my @entities =  split(/:/, $LS_COLORS);
 
@@ -447,9 +476,9 @@ Arguments: @files | \@files
 
 Returns:   @files | @files
 
-Returns a list of filenames colored as specified by the environment C<LS_COLORS>
-variable. If the C<LS_COLORS> variable is not set, throws an exception.
-In this case, C<ls_color_internal()> can be used.
+Returns a list of filenames colored as specified by the environment
+C<LS_COLORS> variable. If the C<LS_COLORS> variable is not set, use the
+default gnu specification.
 
 In scalar context a string joined by '' is returned.
 

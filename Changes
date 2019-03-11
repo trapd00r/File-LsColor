@@ -1,3 +1,7 @@
+0.495  2019-03-11
+  - if LS_COLORS env var is unset, use the default gnu specification from
+    dircolors.
+
 0.492  2019-03-09
   - properly support dircolors keys with a wildcard and no extension, for
     example *MANIFEST, *README
