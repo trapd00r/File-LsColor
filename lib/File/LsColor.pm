@@ -6,7 +6,7 @@ BEGIN {
   use Exporter;
   use vars qw($VERSION @ISA @EXPORT_OK %EXPORT_TAGS);
 
-  $VERSION = '0.495';
+  $VERSION = '0.496';
   @ISA = qw(Exporter);
 
   @EXPORT_OK = qw(
@@ -292,7 +292,11 @@ sub ls_color {
 # https://github.com/trapd00r/File-LsColor/issues/1
 
 # ./recup_dir.5/
-    -d $real_file and $ext = 'di';
+# Invalid \0 character in pathname for ftdir: \0ls++.conf at LsColor.pm
+
+    if($real_file !~ m/\0/) {
+      -d $real_file and $ext = 'di';
+    }
 
     if(!defined($ext)) {
       -l $real_file and $ext = 'ln'; # symlink
