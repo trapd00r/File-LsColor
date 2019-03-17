@@ -1,3 +1,7 @@
+0.498 2019-03-17
+  - fix bug in can_ls_color() that made the function return undef when it
+    shouldn't
+
 0.495  2019-03-11
   - if LS_COLORS env var is unset, use the default gnu specification from
     dircolors.
