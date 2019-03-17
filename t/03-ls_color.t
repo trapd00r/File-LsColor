@@ -27,9 +27,9 @@ print Dumper $default_png;
 
 sub mocklscolors {
   my $mock;
-  $mock->{pl}  = '38;5;197';
-  $mock->{pm}  = '48;5;220;1;3;7';
-  $mock->{mp3} = '38;5;220';
+  $mock->{'.pl'}  = '38;5;197';
+  $mock->{'.pm'}  = '48;5;220;1;3;7';
+  $mock->{'.mp3'} = '38;5;220';
   $mock->{README} = '38;5;34';
   return $mock;
 }

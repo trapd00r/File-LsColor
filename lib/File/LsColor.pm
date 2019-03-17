@@ -6,7 +6,7 @@ BEGIN {
   use Exporter;
   use vars qw($VERSION @ISA @EXPORT_OK %EXPORT_TAGS);
 
-  $VERSION = '0.496';
+  $VERSION = '0.498';
   @ISA = qw(Exporter);
 
   @EXPORT_OK = qw(
@@ -388,7 +388,7 @@ sub can_ls_color {
 # return undef if all else fails
   {
     no warnings;
-    my($ext) = $ft =~ m/^.*\.(.+)$/m;
+    my($ext) = $ft =~ m/^.*([.].+)$/;
     return $table->{$ext} ? $table->{$ext} : undef;
   }
 }
