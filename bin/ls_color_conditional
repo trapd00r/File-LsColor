@@ -1,0 +1,16 @@
+#!/usr/bin/perl
+use strict;
+
+
+use Term::ExtendedColor qw(fg);
+use File::LsColor       qw(ls_color can_ls_color get_ls_colors);
+
+my @files = @ARGV ? @ARGV : map { chomp; $_ } <>;
+
+my $colors = get_ls_colors();
+
+
+for my $file(@files) {
+  printf "%s\n",
+    can_ls_color($file) ? ls_color($file) : fg($colors->{di}, $file);
+}
