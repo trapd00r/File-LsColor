@@ -1,0 +1,59 @@
+#!/usr/bin/perl
+use strict;
+use lib '../lib';
+use File::LsColor qw(ls_color);
+
+$File::LsColor::NO_STAT = 1;
+
+if(@ARGV) {
+  print "$_\n" for ls_color(\@ARGV);
+}
+else {
+  while(<>) {
+    print ls_color($_), "\n";
+  }
+}
+
+
+
+
+__END__
+
+=pod
+
+=head1 NAME
+
+ls_color - colorize input filenames just like ls does
+
+=head1 USAGE
+
+  command | ls_color
+
+=head1 DESCRIPTION
+
+B<ls_color> demonstrates the Perl module L<File::Lscolor>.
+
+=head1 EXAMPLES
+
+  find $HOME/ | ls_color
+
+=head1 AUTHOR
+
+  Magnus Woldrich
+  CPAN ID: WOLDRICH
+  m@japh.se
+  http://japh.se
+
+=head1 REPORTING BUGS
+
+Report bugs on rt.cpan.org or to m@japh.se
+
+=head1 COPYRIGHT
+
+Copyright (C) 2011 Magnus Woldrich. All right reserved.
+This program is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself.
+
+=cut
+
+# vim: set ts=2 et sw=2:

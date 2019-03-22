@@ -6,7 +6,7 @@ BEGIN {
   use Exporter;
   use vars qw($VERSION @ISA @EXPORT_OK %EXPORT_TAGS);
 
-  $VERSION = '0.498';
+  $VERSION = '0.499';
   @ISA = qw(Exporter);
 
   @EXPORT_OK = qw(
@@ -29,6 +29,10 @@ BEGIN {
     ],
   );
 }
+
+# Skip stat:ing files for attributes like +x. This can be desired if the
+# filenames aren't real files, or for performance reasons.
+our $NO_STAT = 0;
 
 # alias for compatibility reasons with File::LsColor prior to 0.300
 {
@@ -298,7 +302,7 @@ sub ls_color {
       -d $real_file and $ext = 'di';
     }
 
-    if(!defined($ext)) {
+    if( not defined($ext) and $NO_STAT == 0) {
       -l $real_file and $ext = 'ln'; # symlink
       -x $real_file and $ext = 'ex'; # executable
       -d $real_file and $ext = 'di'; # beware, dirs have +x
@@ -532,6 +536,12 @@ Returns a hashref with extension => attribute mappings, i.e:
     'ace' => '01;31',
     'anx' => '01;35',
     'arj' => '01;31',
+
+=head1 NOTES
+
+If the internal C<$NO_STAT> variable is set, no stat call wil be made on
+the input filenames. This can be desired if the filenames aren't real
+files, or for performance reasons.
 
 =head1 AUTHOR
 

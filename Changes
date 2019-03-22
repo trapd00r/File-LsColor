@@ -1,3 +1,8 @@
+0.499 2019-03-22
+  - introducing $File::LsColor::NO_STAT variable. If set, no stat() will be
+    made. This can be desired if the filenames aren't real files, or for
+    performance reasons.
+
 0.498 2019-03-17
   - fix bug in can_ls_color() that made the function return undef when it
     shouldn't
