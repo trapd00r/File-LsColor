@@ -3,7 +3,7 @@ use strict;
 use lib '../lib';
 use vars qw($VERSION);
 
-$VERSION = '0.042';
+$VERSION = '0.046';
 
 use Pod::Usage;
 use Getopt::Long;
@@ -23,7 +23,8 @@ GetOptions(
 
 
 while(<>) {
-  print $option{key} ? by_key($_) : ls_color($_);
+  chomp;
+  printf "%s\n",  $option{key} ? by_key($_) : ls_color($_);
 }
 
 
@@ -32,12 +33,14 @@ sub by_key {
   my $line = shift;
   my $filename;
 
-  my @line_parts = split(/($option{IFS})/, $line);
-  my $delimiter = $1;
+  my ($delimiter) = $line =~ m/($option{IFS})/;
+
+  my @line_parts = grep { ! /^$option{IFS}$/ } split(/($option{IFS})/, $line);
 
 
   # make sure that -k2 does what's expected and picks the second column
-  my $column = $option{key} ? $option{key} : 0;
+  my $column = $option{key} ? $option{key} - 1 : 0;
+
   $line_parts[$column] = ls_color( $line_parts[$column]);
 
   $line = join($delimiter, @line_parts);
