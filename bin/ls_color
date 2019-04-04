@@ -1,15 +1,48 @@
 #!/usr/bin/perl
 use strict;
 use lib '../lib';
+use vars qw($VERSION);
+
+$VERSION = '0.042';
+
+use Pod::Usage;
+use Getopt::Long;
 use File::LsColor qw(ls_color);
 
-if(@ARGV) {
-  print "$_\n" for ls_color(\@ARGV);
+Getopt::Long::Configure qw(bundling auto_version);
+
+my %option;
+
+$option{IFS} = qr/\s+/;
+
+GetOptions(
+  'k:i'   => \$option{key},
+  'ifs:s' => \$option{IFS},
+  'h|help' => sub { pod2usage(verbose => 1); exit },
+);
+
+
+while(<>) {
+  print $option{key} ? by_key($_) : ls_color($_);
 }
-else {
-  while(<>) {
-    print ls_color($_), "\n";
-  }
+
+
+
+sub by_key {
+  my $line = shift;
+  my $filename;
+
+  my @line_parts = split(/($option{IFS})/, $line);
+  my $delimiter = $1;
+
+
+  # make sure that -k2 does what's expected and picks the second column
+  my $column = $option{key} ? $option{key} : 0;
+  $line_parts[$column] = ls_color( $line_parts[$column]);
+
+  $line = join($delimiter, @line_parts);
+
+  return $line;
 }
 
 
@@ -25,15 +58,24 @@ ls_color - colorize input filenames just like ls does
 
 =head1 USAGE
 
-  command | ls_color
+  command | ls_color [OPTIONS]
 
 =head1 DESCRIPTION
 
-B<ls_color> demonstrates the Perl module L<File::Lscolor>.
+B<ls_color> demonstrates the Perl module L<File::LsColor>.
+
+=head1 OPTIONS
+
+  -k,  --key  look for filenames in field n
+       --ifs  set input field separator
+
+  -h,  --help display this help and exit
 
 =head1 EXAMPLES
 
   find $HOME/ | ls_color
+
+  du -h --max-depth=1 "$@" | sort -k 1,1hr -k 2,2f | ls_color -k2
 
 =head1 AUTHOR
 
@@ -41,6 +83,7 @@ B<ls_color> demonstrates the Perl module L<File::Lscolor>.
   CPAN ID: WOLDRICH
   m@japh.se
   http://japh.se
+  https://github.com/trapd00r
 
 =head1 REPORTING BUGS
 
@@ -48,9 +91,10 @@ Report bugs on rt.cpan.org or to m@japh.se
 
 =head1 COPYRIGHT
 
-Copyright (C) 2011 Magnus Woldrich. All right reserved.
-This program is free software; you can redistribute it and/or modify
-it under the same terms as Perl itself.
+Copyright (C) 2011, 2019- Magnus Woldrich. All right reserved. This
+program is free software; you can redistribute it and/or modify it under
+the same terms as Perl itself.
+
 
 =cut
 

@@ -1,3 +1,8 @@
+0.501 2019-04-04
+  - bin/ls_color now accepts a --key option similar to sort(1). The input field
+    separator can be set as well. Useful to colorize filenames that can be
+    aligned in columns other than the first; see examples section.
+
 0.500 2019-03-24
   - Fix character device indicator to be cd, not ca
 

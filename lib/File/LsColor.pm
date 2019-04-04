@@ -1,12 +1,12 @@
 package File::LsColor;
 use strict;
-use warnings;
+#use warnings;
 
 BEGIN {
   use Exporter;
   use vars qw($VERSION @ISA @EXPORT_OK %EXPORT_TAGS);
 
-  $VERSION = '0.500';
+  $VERSION = '0.501';
   @ISA = qw(Exporter);
 
   @EXPORT_OK = qw(
