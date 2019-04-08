@@ -1,3 +1,7 @@
+0.504 2019-04-08
+  - bin/ls_color now properly splits a line and adds back the input field
+    separator. Added some advanced examples to the docs.
+
 0.501 2019-04-04
   - bin/ls_color now accepts a --key option similar to sort(1). The input field
     separator can be set as well. Useful to colorize filenames that can be

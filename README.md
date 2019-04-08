@@ -124,14 +124,11 @@ Else, returns undef.
     CPAN ID: WOLDRICH
     m@japh.se
     http://japh.se
+    https://github.com/trapd00r
 
 # REPORTING BUGS
 
 Report bugs on [https://github.com/trapd00r/File-LsColor](https://github.com/trapd00r/File-LsColor) or to m@japh.se
-
-# CONTRIBUTORS
-
-None required yet.
 
 # COPYRIGHT
 

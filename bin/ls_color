@@ -3,7 +3,7 @@ use strict;
 use lib '../lib';
 use vars qw($VERSION);
 
-$VERSION = '0.046';
+$VERSION = '0.050';
 
 use Pod::Usage;
 use Getopt::Long;
@@ -13,11 +13,11 @@ Getopt::Long::Configure qw(bundling auto_version);
 
 my %option;
 
-$option{IFS} = qr/\s+/;
+$option{IFS} = '\s+';
 
 GetOptions(
-  'k:i'   => \$option{key},
-  'ifs:s' => \$option{IFS},
+  'k:i'    => \$option{key},
+  'ifs:s'  => \$option{IFS},
   'h|help' => sub { pod2usage(verbose => 1); exit },
 );
 
@@ -35,17 +35,16 @@ sub by_key {
 
   my ($delimiter) = $line =~ m/($option{IFS})/;
 
-  my @line_parts = grep { ! /^$option{IFS}$/ } split(/($option{IFS})/, $line);
+  my @line_parts = split(/$option{IFS}/g, $line);
+
+  # -k2 equals array index 1
+  my $requested_column = $line_parts[$option{key} - 1];
+
+  $line_parts[$option{key} -1] = ls_color($requested_column);
 
 
-  # make sure that -k2 does what's expected and picks the second column
-  my $column = $option{key} ? $option{key} - 1 : 0;
+  return join($delimiter, @line_parts);
 
-  $line_parts[$column] = ls_color( $line_parts[$column]);
-
-  $line = join($delimiter, @line_parts);
-
-  return $line;
 }
 
 
@@ -79,6 +78,9 @@ B<ls_color> demonstrates the Perl module L<File::LsColor>.
   find $HOME/ | ls_color
 
   du -h --max-depth=1 "$@" | sort -k 1,1hr -k 2,2f | ls_color -k2
+
+  # cheap mans ls++
+  find "$@" -printf "%M | %TY-%Tm-%Td | %d%y %f -> (%.20P)\n" | ls_color -k6
 
 =head1 AUTHOR
 
