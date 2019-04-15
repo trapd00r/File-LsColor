@@ -22,13 +22,14 @@ WriteMakefile1(
     },
   },
 
-  META_ADD => {
-    provides => {
-      'File::LsColor' => {
-        file => 'lib/File/LsColor.pm',
-      },
-    },
-  },
+# this makes version from logic fail - why?
+#  META_ADD => {
+#    provides => {
+#      'File::LsColor' => {
+#        file => 'lib/File/LsColor.pm',
+#      },
+#    },
+#  },
 
   NAME             => q{File::LsColor},
   AUTHOR           => q{Magnus Woldrich <m@japh.se>},
