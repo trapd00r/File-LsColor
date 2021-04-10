@@ -6,7 +6,7 @@ BEGIN {
   use Exporter;
   use vars qw($VERSION @ISA @EXPORT_OK %EXPORT_TAGS);
 
-  $VERSION = '0.514';
+  $VERSION = '0.516';
   @ISA = qw(Exporter);
 
   @EXPORT_OK = qw(
@@ -526,8 +526,9 @@ Else, returns undef.
 The same as can_ls_color(), exportable because of compatibility reasons.
 
 =head2 parse_ls_colors()
-  Arguments: $string
-  Returns:   \%hash
+
+Arguments: $string
+Returns:   \%hash
 
 Returns a hashref with extension => attribute mappings, i.e:
 
