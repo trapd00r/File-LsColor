@@ -1,4 +1,4 @@
-0.510 2021-04-27
+0.520 2021-04-27
   - introducing $File::LsColor::IGNORE_CASE variable. If set, case is ignored
     for file extensions.
 
