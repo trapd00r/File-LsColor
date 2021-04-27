@@ -6,7 +6,7 @@ BEGIN {
   use Exporter;
   use vars qw($VERSION @ISA @EXPORT_OK %EXPORT_TAGS);
 
-  $VERSION = '0.516';
+  $VERSION = '0.510';
   @ISA = qw(Exporter);
 
   @EXPORT_OK = qw(
@@ -33,6 +33,9 @@ BEGIN {
 # Skip stat:ing files for attributes like +x. This can be desired if the
 # filenames aren't real files, or for performance reasons.
 our $NO_STAT = 0;
+
+# If true, ignore case on file extensions; mp4/MP4
+our $IGNORE_CASE = 0;
 
 # alias for compatibility reasons with File::LsColor prior to 0.300
 {
@@ -332,6 +335,16 @@ sub ls_color {
     elsif(exists($extracted_ls_colors->{$ext})) {
       $file = fg($extracted_ls_colors->{$ext}, $file);
     }
+
+# We haven't found a valid extension -> color mapping yet, but if
+# IGNORE_CASE is true, check if the lowercase version of the capitalized
+# extension does in fact exist.
+# Just make sure to use the non-lc version while returning.
+# https://github.com/trapd00r/File-LsColor/issues/9
+
+    elsif($IGNORE_CASE && $extracted_ls_colors->{lc($ext)}) {
+      $file = fg($extracted_ls_colors->{lc($ext)}, $file);
+    }
     else {
 #      $file = fg(32, $file);
     }
@@ -543,6 +556,9 @@ Returns a hashref with extension => attribute mappings, i.e:
 If the internal C<$NO_STAT> variable is set, no stat call wil be made on
 the input filenames. This can be desired if the filenames aren't real
 files, or for performance reasons.
+
+If the internal C<$IGNORE_CASE> variable is set, case is ignored in file
+extensions.
 
 =head1 AUTHOR
 

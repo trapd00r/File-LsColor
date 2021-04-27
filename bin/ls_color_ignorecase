@@ -1,0 +1,108 @@
+#!/usr/bin/perl
+use strict;
+use lib '../lib';
+use vars qw($VERSION);
+
+$VERSION = '0.052';
+
+use Pod::Usage;
+use Getopt::Long;
+use File::LsColor qw(ls_color);
+
+Getopt::Long::Configure qw(bundling auto_version);
+
+$File::LsColor::IGNORE_CASE = 1;
+
+my %option;
+
+$option{IFS} = '/';
+
+GetOptions(
+  'k:i'    => \$option{key},
+  'ifs:s'  => \$option{IFS},
+  'h|help' => sub { pod2usage(verbose => 1); exit },
+);
+
+
+while(<>) {
+  chomp;
+  printf "%s\n",  $option{key} ? by_key($_) : ls_color($_);
+}
+
+
+
+sub by_key {
+  my $line = shift;
+  my $filename;
+
+  my ($delimiter) = $line =~ m/($option{IFS})/;
+
+  my @line_parts = split(/$option{IFS}/g, $line);
+
+  # -k2 equals array index 1
+  my $requested_column = $line_parts[$option{key} - 1];
+
+  $line_parts[$option{key} -1] = ls_color($requested_column);
+
+
+  return join($delimiter, @line_parts);
+
+}
+
+
+
+
+__END__
+
+=pod
+
+=head1 NAME
+
+ls_color - colorize input filenames just like ls does
+
+=head1 USAGE
+
+  command | ls_color [OPTIONS]
+
+=head1 DESCRIPTION
+
+B<ls_color> demonstrates the Perl module L<File::LsColor>.
+
+=head1 OPTIONS
+
+  -k,  --key  look for filenames in field n
+       --ifs  set input field separator
+
+  -h,  --help display this help and exit
+
+=head1 EXAMPLES
+
+  find $HOME/ | ls_color
+
+  du -h --max-depth=1 "$@" | sort -k 1,1hr -k 2,2f | ls_color -k2
+
+  # cheap mans ls++
+  find "$@" -printf "%M | %TY-%Tm-%Td | %d%y %f -> (%.20P)\n" | ls_color -k6
+
+=head1 AUTHOR
+
+  Magnus Woldrich
+  CPAN ID: WOLDRICH
+  m@japh.se
+  http://japh.se
+  https://github.com/trapd00r
+
+=head1 REPORTING BUGS
+
+Report bugs on rt.cpan.org or to m@japh.se
+
+=head1 COPYRIGHT
+
+Copyright (C) 2011, 2019- Magnus Woldrich. All right reserved. This
+program is free software; you can redistribute it and/or modify it under
+the same terms as Perl itself.
+
+
+=cut
+
+# vim: set ts=2 et sw=2:
