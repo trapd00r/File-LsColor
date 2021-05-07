@@ -1,0 +1,16 @@
+#!/usr/bin/perl
+
+# Check if a filetype or glob is defined in LS_COLORS. If it is, display it in
+# its color using Term::ExtendedColor::fg which can take the raw format string,
+# e.g 38;5;30
+
+use strict;
+use File::LsColor qw(can_ls_color);
+use Term::ExtendedColor qw(fg);
+
+my $what  = $ARGV[0] // 'di'; # directory
+my $attr = can_ls_color($what);
+
+printf "%s: %s\n",
+  fg(($attr ? $attr : $what) , $what),
+  fg( ($attr ? fg(34, 'YES') : fg(196, 'NO')) );
