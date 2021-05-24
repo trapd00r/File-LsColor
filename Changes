@@ -1,3 +1,7 @@
+0.530 2021-05-24
+  - introducing File::LsColor::slack_code_to_ls_code.
+    Given a 'slack name', returns the short form of the ls code.
+
 0.520 2021-04-27
   - introducing $File::LsColor::IGNORE_CASE variable. If set, case is ignored
     for file extensions.

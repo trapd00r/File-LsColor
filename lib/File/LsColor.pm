@@ -6,7 +6,7 @@ BEGIN {
   use Exporter;
   use vars qw($VERSION @ISA @EXPORT_OK %EXPORT_TAGS);
 
-  $VERSION = '0.520';
+  $VERSION = '0.530';
   @ISA = qw(Exporter);
 
   @EXPORT_OK = qw(
@@ -18,6 +18,7 @@ BEGIN {
     can_ls_color
     ls_color_lookup
     parse_ls_colors
+    slack_code_to_ls_code
   );
 
   %EXPORT_TAGS = (
@@ -25,6 +26,7 @@ BEGIN {
       qw(
       ls_color ls_color_custom ls_color_default ls_color_internal
       get_ls_colors can_ls_color ls_color_lookup parse_ls_colors
+      slack_code_to_ls_code
       )
     ],
   );
@@ -410,6 +412,55 @@ sub can_ls_color {
   }
 }
 
+sub slack_code_to_ls_code {
+  my %slack = (
+    NORMAL                => 'no',
+    NORM                  => 'no',
+    FILE                  => 'fi',
+    RESET                 => 'rs',
+    DIR                   => 'di',
+    LNK                   => 'ln',
+    LINK                  => 'ln',
+    SYMLINK               => 'ln',
+    ORPHAN                => 'or',
+    MISSING               => 'mi',
+    FIFO                  => 'pi',
+    PIPE                  => 'pi',
+    SOCK                  => 'so',
+    BLK                   => 'bd',
+    BLOCK                 => 'bd',
+    CHR                   => 'cd',
+    CHAR                  => 'cd',
+    DOOR                  => 'do',
+    EXEC                  => 'ex',
+    LEFT                  => 'lc',
+    LEFTCODE              => 'lc',
+    RIGHT                 => 'rc',
+    RIGHTCODE             => 'rc',
+    END                   => 'ec',
+    ENDCODE               => 'ec',
+    SUID                  => 'su',
+    SETUID                => 'su',
+    SGID                  => 'sg',
+    SETGID                => 'sg',
+    STICKY                => 'st',
+    OTHER_WRITABLE        => 'ow',
+    OWR                   => 'ow',
+    STICKY_OTHER_WRITABLE => 'tw',
+    OWT                   => 'tw',
+    CAPABILITY            => 'ca',
+    MULTIHARDLINK         => 'mh',
+    CLRTOEOL              => 'cl',
+    NULL                  => 'NULL',
+  );
+
+  my $query = shift;
+  return $slack{uc($query)}
+    ? $slack{uc($query)}
+    : undef;
+}
+
+
 
 1;
 
@@ -435,6 +486,7 @@ File::LsColor - Colorize input filenames just like ls does
       can_ls_color
       ls_color_lookup
       parse_ls_colors
+      slack_code_to_ls_code
     );
 
 
@@ -551,6 +603,18 @@ Returns a hashref with extension => attribute mappings, i.e:
     'anx' => '01;35',
     'arj' => '01;31',
 
+=head2 slack_code_to_ls_code()
+
+Arguments: $string
+Returns:   $string
+
+Given a 'slack name', returns the short form of the ls code, like so:
+
+  slack_code_to_ls_code('NORMAL'); # returns 'no'
+  slack_code_to_ls_code('STICKY_OTHER_WRITABLE'); # returns 'tw'
+
+Returns undef if the slack name is not valid.
+
 =head1 NOTES
 
 If the internal C<$NO_STAT> variable is set, no stat call wil be made on
@@ -565,6 +629,7 @@ extensions.
   Magnus Woldrich
   CPAN ID: WOLDRICH
   m@japh.se
+  japh@irc.libera.chat
   http://japh.se
   https://github.com/trapd00r
 
