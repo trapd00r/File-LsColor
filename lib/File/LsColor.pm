@@ -6,7 +6,7 @@ BEGIN {
   use Exporter;
   use vars qw($VERSION @ISA @EXPORT_OK %EXPORT_TAGS);
 
-  $VERSION = '0.540';
+  $VERSION = '0.541';
   @ISA = qw(Exporter);
 
   @EXPORT_OK = qw(
@@ -32,15 +32,14 @@ BEGIN {
   );
 }
 
-use DDP;
-use Data::Dumper;
-
-{
-  package Data::Dumper;
-  no strict 'vars';
-  $Terse = $Indent = $Useqq = $Deparse = $Sortkeys = 1;
-  $Quotekeys = 0;
-}
+#use Data::Dumper;
+#
+#{
+#  package Data::Dumper;
+#  no strict 'vars';
+#  $Terse = $Indent = $Useqq = $Deparse = $Sortkeys = 1;
+#  $Quotekeys = 0;
+#}
 
 
 # Skip stat:ing files for attributes like +x. This can be desired if the
@@ -54,6 +53,8 @@ our $IGNORE_CASE = 0;
 # basename will be colored as per the LS_COLORS directory specification,
 # while the actual base filename will be colored according to the file
 # extension specification.
+#
+# New default since v0.540, 2021-10-09!
 our $COLORIZE_PATH = 1;
 
 # alias for compatibility reasons with File::LsColor prior to 0.300
@@ -62,7 +63,6 @@ our $COLORIZE_PATH = 1;
   *ls_color_lookup = *can_ls_color;
 }
 
-#use Carp qw(croak);
 use Term::ExtendedColor qw(fg);
 
 
