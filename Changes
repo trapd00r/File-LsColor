@@ -1,3 +1,10 @@
+0.540 2021-10-09
+  - introducing $File::LsColor::COLORIZE_PATH variable.
+    If set (new default), given a path like ~/foo/bar.flac, everything
+    prior to the basename will be colored as per the LS_COLORS directory
+    specification, while the actual base filename will be colored
+    according to the file extension specification.
+
 0.530 2021-05-24
   - introducing File::LsColor::slack_code_to_ls_code.
     Given a 'slack name', returns the short form of the ls code.

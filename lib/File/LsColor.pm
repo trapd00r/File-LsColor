@@ -6,7 +6,7 @@ BEGIN {
   use Exporter;
   use vars qw($VERSION @ISA @EXPORT_OK %EXPORT_TAGS);
 
-  $VERSION = '0.530';
+  $VERSION = '0.540';
   @ISA = qw(Exporter);
 
   @EXPORT_OK = qw(
@@ -32,12 +32,29 @@ BEGIN {
   );
 }
 
+use DDP;
+use Data::Dumper;
+
+{
+  package Data::Dumper;
+  no strict 'vars';
+  $Terse = $Indent = $Useqq = $Deparse = $Sortkeys = 1;
+  $Quotekeys = 0;
+}
+
+
 # Skip stat:ing files for attributes like +x. This can be desired if the
 # filenames aren't real files, or for performance reasons.
 our $NO_STAT = 0;
 
 # If true, ignore case on file extensions; mp4/MP4
 our $IGNORE_CASE = 0;
+
+# If set, given a path like ~/foo/bar.flac, everything prior to the
+# basename will be colored as per the LS_COLORS directory specification,
+# while the actual base filename will be colored according to the file
+# extension specification.
+our $COLORIZE_PATH = 1;
 
 # alias for compatibility reasons with File::LsColor prior to 0.300
 {
@@ -276,7 +293,9 @@ sub ls_color {
 
   for my $file(@files) {
     chomp $file;
+
     next if $file =~ m/^\s+$/;
+
 # it's important to keep the dot if there is one. If you remove the dot,
 # directories named bin/ can be miscolored given a key like
 # *.bin=38;5;220
@@ -328,14 +347,19 @@ sub ls_color {
 #   README
 #   *Makefile.PL
 # are all perfectly valid keys
-      $ext = $real_file;
+      $ext = basename($real_file);
     }
 
     if(exists($extracted_ls_colors->{$real_file})) {
-      $file = fg($extracted_ls_colors->{$real_file}, $file);
+      $file = fg($extracted_ls_colors->{$real_file}, basename($real_file));
     }
     elsif(exists($extracted_ls_colors->{$ext})) {
-      $file = fg($extracted_ls_colors->{$ext}, $file);
+      if($COLORIZE_PATH) {
+        $file = sprintf("%s%s", _colorize_path($real_file), fg($extracted_ls_colors->{$ext}, basename($real_file)));
+      }
+      else {
+        $file = fg($extracted_ls_colors->{$ext}, $real_file);
+        }
     }
 
 # We haven't found a valid extension -> color mapping yet, but if
@@ -347,8 +371,20 @@ sub ls_color {
     elsif($IGNORE_CASE && $extracted_ls_colors->{lc($ext)}) {
       $file = fg($extracted_ls_colors->{lc($ext)}, $file);
     }
+
     else {
-#      $file = fg(32, $file);
+      if($COLORIZE_PATH) {
+        $file = sprintf "%s%s", _colorize_path($file),
+          exists($extracted_ls_colors->{basename($file)})
+            ? fg($extracted_ls_colors->{basename($file)},basename($file))
+            : $file;
+      }
+# A file with no extension or other means of colorization?
+      else {
+        $file = exists($extracted_ls_colors->{basename($file)})
+          ? fg($extracted_ls_colors->{basename($file)}, $file)
+          : $file;
+      }
     }
   }
   return wantarray() ? @files : join('', @files);
@@ -398,6 +434,11 @@ sub can_ls_color {
 
   $ft =~ s/^\s+//;
 
+################################################################################
+# If $File::LsColor::IGNORE_CASE is set, we need to color according to the
+# lowercase definitions.
+################################################################################
+  $ft = lc($ft) if $File::LsColor::IGNORE_CASE;
 
 # if called with an extension that exists, return it.
   return $table->{$ft} if $table->{$ft};
@@ -458,6 +499,18 @@ sub slack_code_to_ls_code {
   return $slack{uc($query)}
     ? $slack{uc($query)}
     : undef;
+}
+
+sub _colorize_path {
+  my $what = shift;
+  use File::Basename;
+  my $dirname  = dirname($what);
+
+  $dirname = ($dirname eq '.')
+    ? ''
+    : fg($extracted_ls_colors->{di}, $dirname . '/');
+
+  return $dirname;
 }
 
 
@@ -623,6 +676,11 @@ files, or for performance reasons.
 
 If the internal C<$IGNORE_CASE> variable is set, case is ignored in file
 extensions.
+
+If the internal C<$COLORIZE_PATH> is set, given a path like
+~/foo/bar.flac, everything prior to the basename will be colored as per
+the directory specification, while the actual base filename will be
+colored according to the file extension specification.
 
 =head1 AUTHOR
 
