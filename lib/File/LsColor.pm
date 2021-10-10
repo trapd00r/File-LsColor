@@ -6,7 +6,7 @@ BEGIN {
   use Exporter;
   use vars qw($VERSION @ISA @EXPORT_OK %EXPORT_TAGS);
 
-  $VERSION = '0.541';
+  $VERSION = '0.542';
   @ISA = qw(Exporter);
 
   @EXPORT_OK = qw(
@@ -32,32 +32,33 @@ BEGIN {
   );
 }
 
-#use Data::Dumper;
+################################################################################
+# If set, skip stat:ing files for attributes like +x.
+# This can be desired if the filename aren't real files, or for performance
+# reasons.
 #
-#{
-#  package Data::Dumper;
-#  no strict 'vars';
-#  $Terse = $Indent = $Useqq = $Deparse = $Sortkeys = 1;
-#  $Quotekeys = 0;
-#}
-
-
-# Skip stat:ing files for attributes like +x. This can be desired if the
-# filenames aren't real files, or for performance reasons.
+# Interesting read: https://github.com/trapd00r/File-LsColor/issues/7
+################################################################################
 our $NO_STAT = 0;
 
-# If true, ignore case on file extensions; mp4/MP4
+################################################################################
+# If set, ignore case on file extensions.
+################################################################################
 our $IGNORE_CASE = 0;
 
-# If set, given a path like ~/foo/bar.flac, everything prior to the
-# basename will be colored as per the LS_COLORS directory specification,
-# while the actual base filename will be colored according to the file
+################################################################################
+# If set, given a path like ~/foo/bar.flac, everything prior to the basename
+# will be colored according to the LS_COLORS directory specification (the 'di'
+# key), while the actual base filename will be colored according to the file
 # extension specification.
 #
 # New default since v0.540, 2021-10-09!
+################################################################################
 our $COLORIZE_PATH = 1;
 
-# alias for compatibility reasons with File::LsColor prior to 0.300
+################################################################################
+# This is an alias for compatibility reasons with File::LsColor prior to v0.300.
+################################################################################
 {
   no warnings 'once';
   *ls_color_lookup = *can_ls_color;
@@ -212,13 +213,17 @@ my $ls_colors_default = '
 $ls_colors_default =~ s/\n|\s+//g;
 #>
 
-# if LS_COLORS environment variable is unset, we use the default gnu
+################################################################################
+# If the $LS_COLORS environment variable is unset, use the default GNU
 # specification from dircolors.
-
+################################################################################
 my $extracted_ls_colors;
 my $LS_COLORS = defined($ENV{LS_COLORS}) ? $ENV{LS_COLORS} : $ls_colors_default;
 
-# For situations like *.pl=38;5;196;1 (bold and red)
+################################################################################
+# This is for situations like:
+# *.pl=38;5;196;1 (red with bold attribute)
+################################################################################
 my %attributes = (
   1 => 'bold',
   2 => 'faint',
@@ -229,20 +234,36 @@ my %attributes = (
   7 => 'reverse',
 );
 
-# Alright, use our own LS_COLORS definition
+################################################################################
+# This is the internal LS_COLORS specification, taken from:
+# https://github.com/trapd00r/LS_COLORS
+################################################################################
 sub ls_color_internal {
   $LS_COLORS = $internal_ls_color;
   $extracted_ls_colors = parse_ls_colors($LS_COLORS);
   ls_color(@_);
 }
 
+################################################################################
+# Ability to use a custom specification, like so:
+#
+# ls_color_custom(
+#   {
+#     '.pl' => '38;5;196;1',
+#     'Changes' => '48;5;197;38;5;220;1;3;4;8',
+#   }
+# );
+################################################################################
 sub ls_color_custom {
   $LS_COLORS = shift;
   $extracted_ls_colors = parse_ls_colors($LS_COLORS);
   ls_color(@_);
 }
 
-# Those are the default LS_COLORS mappings from GNU ls
+################################################################################
+# These are the default dircolors mappings from GNU dircolors/ls. This is what
+# ls defaults to when the $LS_COLORS environment variable is unset.
+################################################################################
 sub ls_color_default {
 $LS_COLORS= '
   rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:
@@ -273,9 +294,10 @@ $LS_COLORS= '
   ls_color(@_);
 }
 
-
-# none of the ls_color_* variations are called, so we use the the
-# LS_COLORS defined in the environment variable.
+################################################################################
+# None of the ls_color_* variations are called, so use the LS_COLORS defined in
+# the environment variable. This is what most users would want to use.
+################################################################################
 $extracted_ls_colors = parse_ls_colors($LS_COLORS);
 
 
@@ -296,15 +318,18 @@ sub ls_color {
 
     next if $file =~ m/^\s+$/;
 
-# it's important to keep the dot if there is one. If you remove the dot,
-# directories named bin/ can be miscolored given a key like
-# *.bin=38;5;220
-
+################################################################################
+# It's important to keep the dot if there is one, or else miscolorings can
+# happen:
+#
+# *.bin=38;5;220  could color directories named bin/, for example.
+################################################################################
     my($ext) = $file =~ m/.*([.]+.+)$/;
 
-# since we need to stat files, we need a real filename that's not padded with
-# whitespace.
-
+################################################################################
+# Since we need to stat files (unless $NO_STAT is set), we need a real filename
+# that's not padded with any whitespace.
+################################################################################
     my $real_file;
     if($file =~ m/^\s+(.+)/) {
       $real_file = $1;
@@ -314,19 +339,23 @@ sub ls_color {
     }
 
 
-# no extension found. let's check file attributes. this will only
-# work if called with absolute paths or from ./ since we can't stat files that
-# we can't access.
-# https://github.com/trapd00r/File-LsColor/issues/1
 
+################################################################################
 # ./recup_dir.5/
 # Invalid \0 character in pathname for ftdir: \0ls++.conf at LsColor.pm
-
+################################################################################
     if($real_file !~ m/\0/) {
       -d $real_file and $ext = 'di';
     }
 
-    if( not defined($ext) and $NO_STAT == 0) {
+################################################################################
+# No regular extension found.
+# Let's check file attributes. This will only work if called with absolute paths
+# or from ./, since we can't stat() files we cannot access.
+#
+# https://github.com/trapd00r/File-LsColor/issues/1
+################################################################################
+    if(not defined($ext) and $NO_STAT == 0) {
       -l $real_file and $ext = 'ln'; # symlink
       -x $real_file and $ext = 'ex'; # executable
       -d $real_file and $ext = 'di'; # beware, dirs have +x
@@ -335,18 +364,23 @@ sub ls_color {
       -b $real_file and $ext = 'bd'; # block device
       -c $real_file and $ext = 'cd'; # character special file
 
-# special case for directories that we can't stat, but we can still safely
-# assume that they are in fact dirs.
-
+################################################################################
+# A special case for directories that we can't stat(), but we can still safely
+# assume that they are in fact directories.
+################################################################################
       $real_file =~ m{/$} and $ext = 'di';
     }
 
-    if(!defined($ext)) {
-# Since these:
-#   Makefile
-#   README
-#   *Makefile.PL
-# are all perfectly valid keys
+################################################################################
+# No regular extension found and no file attribute added.
+# The dircolors specification allows for matching with wildcards and full names,
+# though, so these are all perfectly valid keys:
+# 
+# Makefile
+# README
+# *Makefile.PL
+################################################################################
+    if(not defined($ext)) {
       $ext = basename($real_file);
     }
 
@@ -362,12 +396,14 @@ sub ls_color {
         }
     }
 
-# We haven't found a valid extension -> color mapping yet, but if
-# IGNORE_CASE is true, check if the lowercase version of the capitalized
-# extension does in fact exist.
-# Just make sure to use the non-lc version while returning.
+################################################################################
+# We still haven't found a valid mapping yet, but if $IGNORE_CASE is set, check
+# if the lowercase version of the extension does in fact exist.
+#
+# Just make sure to use the non-lc:ed version while returning.
+#
 # https://github.com/trapd00r/File-LsColor/issues/9
-
+################################################################################
     elsif($IGNORE_CASE && $extracted_ls_colors->{lc($ext)}) {
       $file = fg($extracted_ls_colors->{lc($ext)}, $file);
     }
@@ -401,19 +437,31 @@ sub parse_ls_colors {
     $LS_COLORS = shift @_;
   }
 
-#  if( (!defined($LS_COLORS)) or ($LS_COLORS eq '') ) {
-#    croak("LS_COLORS variable not set! Nothing to do...\n");
-#  }
-# *.flac=38;5;196
+################################################################################
+# The way the dircolors specification is specified is actualy a bug.
+# ':' shouldn't be used as a delimiter, since the way colors are specified using
+# escape sequences are supposed to look like this:
+#
+# 38:5:196
+#
+# and not
+#
+# 38;5;196
+#
+# Someone, somewhere, a long time ago, read that specification wrong and here we
+# are today.
+################################################################################
   my @entities =  split(/:/, $LS_COLORS);
 
   my %ft;
   for my $ent(@entities) {
-# account for:
-#   *.flac - but keep the dot in the extension
-#   *MANIFEST
+
+################################################################################
+# Account for:
+# · *.flac - but keep the dot in the extension
+# · *MANIFEST
+################################################################################
     my ($filetype, $attributes) = $ent =~ m/[*]*(.?\S+)=([\d;]+|target)/;
-#    print "extracted ft: $filetype | attr: $attributes\n";
     $ft{$filetype} = $attributes;
   }
 
@@ -421,10 +469,6 @@ sub parse_ls_colors {
 #  if($ft{ln} eq 'target') {
 #    $ft{ln} = $ft{target};
 #  }
-
-# account for:
-#  *.flac
-#  *MANIFEST
   return \%ft;
 }
 
@@ -440,12 +484,17 @@ sub can_ls_color {
 ################################################################################
   $ft = lc($ft) if $File::LsColor::IGNORE_CASE;
 
-# if called with an extension that exists, return it.
+################################################################################
+# If called with an extension that exists, return it. A special case here so we
+# can query for an extension with or without the period.
+################################################################################
   return $table->{$ft} if $table->{$ft};
   return $table->{".$ft"} if $table->{".$ft"};
 
-# else, check if called with a filename.ext
-# return undef if all else fails
+################################################################################
+# Else, check if called with a filename.ext
+# Return undef if all else fails.
+################################################################################
   {
     no warnings;
     my($ext) = $ft =~ m/^.*([.].+)$/;
