@@ -4,9 +4,7 @@
 
 File::LsColor - Colorize input filenames just like ls does
 
-<img src="/extra/ls_color_all.png" align="right">
-
-![lscolor_rm](/extra/ls_color_rm.png)
+<img src="https://i.imgur.com/BUlEiY8.png" align="right">
 
 
 # SYNOPSIS
