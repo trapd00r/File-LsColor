@@ -3,6 +3,12 @@ use strict;
 use lib '../lib';
 use File::LsColor qw(ls_color_default);
 
+{
+  package File::LsColor;
+  no strict 'vars';
+  $NO_STAT = $COLORIZE_PATH = $IGNORE_CASE = 0;
+}
+
 if(@ARGV) {
   print "$_\n" for ls_color_default(\@ARGV);
 }
