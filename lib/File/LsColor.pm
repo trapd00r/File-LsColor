@@ -463,6 +463,7 @@ sub parse_ls_colors {
 ################################################################################
     my ($filetype, $attributes) = $ent =~ m/[*]*(.?\S+)=([\d;]+|target)/;
     $ft{$filetype} = $attributes;
+    $ft{uc $filetype} = $attributes;
   }
 
 # if symlink value is target, we use the target key's value
