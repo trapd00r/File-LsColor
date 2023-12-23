@@ -6,7 +6,7 @@ BEGIN {
   use Exporter;
   use vars qw($VERSION @ISA @EXPORT_OK %EXPORT_TAGS);
 
-  $VERSION = '0.542';
+  $VERSION = '0.544';
   @ISA = qw(Exporter);
 
   @EXPORT_OK = qw(
@@ -413,7 +413,7 @@ sub ls_color {
         $file = sprintf "%s%s", _colorize_path($file),
           exists($extracted_ls_colors->{basename($file)})
             ? fg($extracted_ls_colors->{basename($file)},basename($file))
-            : $file;
+            : basename($file);
       }
 # A file with no extension or other means of colorization?
       else {
